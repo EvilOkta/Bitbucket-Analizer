@@ -113,8 +113,9 @@ export const ScreenFormStructureModal: React.FC<ScreenFormStructureModalProps> =
     // Check if database operations / DTOs exist in this form
     const hasDatabase = form.elements.some(elem =>
       (elem.dtoModel && elem.dtoModel !== 'None') ||
-      (elem.flowSteps && elem.flowSteps.some(s => s.type === 'db_query' || (s.to && (s.to.toLowerCase().includes('database') || s.to.toLowerCase().includes('db') || s.to.toLowerCase().includes('postgres')))))
+      (elem.sequenceSteps && elem.sequenceSteps.some((s: any) => s.type === 'db_query' || (s.to && (s.to.toLowerCase().includes('database') || s.to.toLowerCase().includes('db') || s.to.toLowerCase().includes('postgres')))))
     );
+
 
     // Layer 4: Shared DB Node (Only if DB interaction is present)
     const dbNode: GraphNode = {
@@ -478,23 +479,23 @@ export const ScreenFormStructureModal: React.FC<ScreenFormStructureModalProps> =
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#090A0F]/80 animate-in fade-in duration-150">
       <div
-        className="w-full max-w-6xl h-[88vh] bg-gray-950 border border-emerald-500/50 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200"
+        className="w-full max-w-6xl h-[88vh] bg-[#111318] border border-[#1E2330] rounded-lg shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-150"
         onClick={e => e.stopPropagation()}
       >
         {/* Modal Top Header */}
-        <div className="p-3.5 border-b border-gray-800 bg-gradient-to-r from-emerald-950/40 via-gray-900 to-indigo-950/40 flex items-center justify-between shrink-0 select-none">
-          <div className="flex items-center space-x-3 min-w-0">
-            <div className="p-2 rounded-xl bg-emerald-950/80 border border-emerald-700/60 text-emerald-400">
-              <Layers3 size={18} />
+        <div className="p-3 border-b border-[#1E2330] bg-[#161922] flex items-center justify-between shrink-0 select-none">
+          <div className="flex items-center space-x-2.5 min-w-0">
+            <div className="p-1.5 rounded bg-[#111318] border border-[#1E2330] text-blue-400">
+              <Layers3 size={16} />
             </div>
             <div className="min-w-0">
               <div className="flex items-center space-x-2">
-                <span className="text-[10px] uppercase font-mono tracking-wider text-emerald-400 font-bold">
+                <span className="text-[10px] uppercase font-mono tracking-wider text-blue-400 font-semibold">
                   D3 Архитектурная структура формы
                 </span>
-                <span className="px-2 py-0.2 rounded text-[10px] font-mono bg-gray-900 text-gray-300 border border-gray-800">
+                <span className="px-2 py-0.2 rounded text-[10px] font-mono bg-[#111318] text-slate-300 border border-[#1E2330]">
                   {form.elements.length} элементов
                 </span>
               </div>

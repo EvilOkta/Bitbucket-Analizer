@@ -14,26 +14,39 @@ export default {
           200: '#bae0fd',
           300: '#7cc8fb',
           400: '#38aaf6',
-          500: '#0052cc', // Atlassian Blue style
-          600: '#0047b3',
-          700: '#0747a6',
-          800: '#00388a',
-          900: '#172b4d',
+          500: '#2563eb', // Precision Cobalt Blue
+          600: '#1d4ed8',
+          700: '#1e40af',
+          800: '#1e3a8a',
+          900: '#172554',
+        },
+        obsidian: {
+          bg: '#090A0F',
+          canvas: '#111318',
+          card: '#161922',
+          hover: '#1E222D',
+          inlay: '#0D0E14',
+          border: '#1E2330',
+          'border-focus': '#2E3748',
+          text: '#F1F5F9',
+          muted: '#94A3B8',
+          subdued: '#64748B',
         },
         dark: {
-          bg: '#0B0F19',
-          card: '#111827',
-          surface: '#1F2937',
-          border: '#374151',
-          text: '#F9FAFB',
-          subtext: '#9CA3AF'
+          bg: '#090A0F',
+          card: '#161922',
+          surface: '#111318',
+          border: '#1E2330',
+          text: '#F1F5F9',
+          subtext: '#94A3B8'
         }
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
-        mono: ['Fira Code', 'JetBrains Mono', 'Consolas', 'monospace']
+        mono: ['JetBrains Mono', 'Fira Code', 'Consolas', 'monospace']
       }
     },
   },
   plugins: [],
 }
+

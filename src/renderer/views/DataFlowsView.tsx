@@ -99,11 +99,11 @@ AuthCtrl --> UI: 200 OK { ssoProviders }
 UI --> User: Отрисовка формы входа и SSO
 @enduml`,
         sequenceSteps: [
-          { order: 1, from: 'Пользователь', to: 'LoginForm (React)', call: 'Открытие страницы /login', sourceFile: 'src/components/LoginForm.tsx', sourceLine: 1 },
-          { order: 2, from: 'LoginForm (React)', to: 'AuthController', call: 'GET /api/v1/auth/config', sourceFile: 'src/controllers/AuthController.ts', sourceLine: 12 },
-          { order: 3, from: 'AuthController', to: 'ConfigService', call: 'loadAuthConfig()' },
-          { order: 4, from: 'ConfigService', to: 'PostgreSQL', call: 'SELECT * FROM auth_settings' },
-          { order: 5, from: 'AuthController', to: 'LoginForm (React)', call: '200 OK { sso_enabled }' }
+          { order: 1, from: 'Пользователь', to: 'LoginForm (React)', call: 'Открытие страницы /login', type: 'sync', sourceFile: 'src/components/LoginForm.tsx', sourceLine: 1 },
+          { order: 2, from: 'LoginForm (React)', to: 'AuthController', call: 'GET /api/v1/auth/config', type: 'sync', sourceFile: 'src/controllers/AuthController.ts', sourceLine: 12 },
+          { order: 3, from: 'AuthController', to: 'ConfigService', call: 'loadAuthConfig()', type: 'sync' },
+          { order: 4, from: 'ConfigService', to: 'PostgreSQL', call: 'SELECT * FROM auth_settings', type: 'db_query' },
+          { order: 5, from: 'AuthController', to: 'LoginForm (React)', call: '200 OK { sso_enabled }', type: 'sync' }
         ]
       },
       {
@@ -152,11 +152,11 @@ AuthCtrl --> UI: 200 OK { token, expires_in }
 UI --> User: Перенаправление на Dashboard
 @enduml`,
         sequenceSteps: [
-          { order: 1, from: 'Пользователь', to: 'LoginForm (React)', call: 'Клик "Войти"', sourceFile: 'src/components/LoginForm.tsx', sourceLine: 34 },
-          { order: 2, from: 'LoginForm (React)', to: 'AuthController', call: 'POST /api/v1/auth/login', sourceFile: 'src/controllers/AuthController.ts', sourceLine: 45 },
-          { order: 3, from: 'AuthController', to: 'AuthenticationService', call: 'validateCredentials()' },
-          { order: 4, from: 'AuthenticationService', to: 'PostgreSQL', call: 'SELECT * FROM users' },
-          { order: 5, from: 'AuthController', to: 'LoginForm (React)', call: '200 OK { token }' }
+          { order: 1, from: 'Пользователь', to: 'LoginForm (React)', call: 'Клик "Войти"', type: 'sync', sourceFile: 'src/components/LoginForm.tsx', sourceLine: 34 },
+          { order: 2, from: 'LoginForm (React)', to: 'AuthController', call: 'POST /api/v1/auth/login', type: 'sync', sourceFile: 'src/controllers/AuthController.ts', sourceLine: 45 },
+          { order: 3, from: 'AuthController', to: 'AuthenticationService', call: 'validateCredentials()', type: 'sync' },
+          { order: 4, from: 'AuthenticationService', to: 'PostgreSQL', call: 'SELECT * FROM users', type: 'db_query' },
+          { order: 5, from: 'AuthController', to: 'LoginForm (React)', call: '200 OK { token }', type: 'sync' }
         ]
       },
       {
@@ -195,9 +195,9 @@ Ctrl -> Mailer: sendResetToken(email)
 Mailer --> UI: 200 OK
 @enduml`,
         sequenceSteps: [
-          { order: 1, from: 'Пользователь', to: 'LoginForm', call: 'Клик ссылки', sourceFile: 'src/components/LoginForm.tsx', sourceLine: 68 },
-          { order: 2, from: 'LoginForm', to: 'AuthController', call: 'POST /reset-password', sourceFile: 'src/controllers/AuthController.ts', sourceLine: 80 },
-          { order: 3, from: 'AuthController', to: 'NotificationService', call: 'sendResetToken()' }
+          { order: 1, from: 'Пользователь', to: 'LoginForm', call: 'Клик ссылки', type: 'sync', sourceFile: 'src/components/LoginForm.tsx', sourceLine: 68 },
+          { order: 2, from: 'LoginForm', to: 'AuthController', call: 'POST /reset-password', type: 'sync', sourceFile: 'src/controllers/AuthController.ts', sourceLine: 80 },
+          { order: 3, from: 'AuthController', to: 'NotificationService', call: 'sendResetToken()', type: 'external_call' }
         ]
       }
     ]
@@ -249,9 +249,9 @@ DB --> OrderCtrl: CartDetails
 OrderCtrl --> UI: 200 OK
 @enduml`,
         sequenceSteps: [
-          { order: 1, from: 'Клиент', to: 'CheckoutForm', call: 'Открытие /checkout', sourceFile: 'src/components/CheckoutForm.tsx', sourceLine: 1 },
-          { order: 2, from: 'CheckoutForm', to: 'OrderController', call: 'GET /api/v1/checkout/init', sourceFile: 'src/controllers/OrderController.ts', sourceLine: 20 },
-          { order: 3, from: 'OrderController', to: 'PostgreSQL', call: 'SELECT * FROM cart_items' }
+          { order: 1, from: 'Клиент', to: 'CheckoutForm', call: 'Открытие /checkout', type: 'sync', sourceFile: 'src/components/CheckoutForm.tsx', sourceLine: 1 },
+          { order: 2, from: 'CheckoutForm', to: 'OrderController', call: 'GET /api/v1/checkout/init', type: 'sync', sourceFile: 'src/controllers/OrderController.ts', sourceLine: 20 },
+          { order: 3, from: 'OrderController', to: 'PostgreSQL', call: 'SELECT * FROM cart_items', type: 'db_query' }
         ]
       },
       {
@@ -304,11 +304,11 @@ OrderSvc --> OrderCtrl: OrderSummaryDto
 OrderCtrl --> UI: 201 Created { order_id }
 @enduml`,
         sequenceSteps: [
-          { order: 1, from: 'Клиент', to: 'CheckoutForm', call: 'Клик "Подтвердить и оплатить"', sourceFile: 'src/components/CheckoutForm.tsx', sourceLine: 88 },
-          { order: 2, from: 'CheckoutForm', to: 'OrderController', call: 'POST /api/v1/orders', sourceFile: 'src/controllers/OrderController.ts', sourceLine: 55 },
-          { order: 3, from: 'OrderController', to: 'OrderService', call: 'processCheckout()' },
-          { order: 4, from: 'OrderService', to: 'PaymentGateway', call: 'chargePayment()' },
-          { order: 5, from: 'OrderService', to: 'PostgreSQL', call: 'INSERT INTO orders' }
+          { order: 1, from: 'Клиент', to: 'CheckoutForm', call: 'Клик "Подтвердить и оплатить"', type: 'sync', sourceFile: 'src/components/CheckoutForm.tsx', sourceLine: 88 },
+          { order: 2, from: 'CheckoutForm', to: 'OrderController', call: 'POST /api/v1/orders', type: 'sync', sourceFile: 'src/controllers/OrderController.ts', sourceLine: 55 },
+          { order: 3, from: 'OrderController', to: 'OrderService', call: 'processCheckout()', type: 'sync' },
+          { order: 4, from: 'OrderService', to: 'PaymentGateway', call: 'chargePayment()', type: 'external_call' },
+          { order: 5, from: 'OrderService', to: 'PostgreSQL', call: 'INSERT INTO orders', type: 'db_query' }
         ]
       }
     ]
@@ -408,7 +408,7 @@ export const DataFlowsView: React.FC<DataFlowsViewProps> = ({ flows, screenForms
       .map(form => {
         const matchesForm = form.name.toLowerCase().includes(q) || form.componentPath.toLowerCase().includes(q) || form.route.toLowerCase().includes(q);
         const matchingElements = form.elements.filter(e =>
-          e.name.toLowerCase().includes(q) || e.targetAction.toLowerCase().includes(q) || e.dtoModel.toLowerCase().includes(q)
+          e.name.toLowerCase().includes(q) || e.targetAction.toLowerCase().includes(q) || (e.dtoModel || '').toLowerCase().includes(q)
         );
         if (matchesForm || matchingElements.length > 0) {
           return {
@@ -881,7 +881,7 @@ ${selectedFlow.sequenceDiagramPlantUml || selectedFlow.sequenceDiagramMermaid ||
                   return (
                     <div
                       key={flow.id}
-                      onClick={() => handleSelectFlow(flow)}
+                      onClick={() => setSelectedFlow(flow)}
                       className={`p-2 rounded-xl cursor-pointer text-xs transition border ${
                         isSelected
                           ? 'bg-blue-950/50 border-blue-500/80 text-blue-200 shadow-sm'

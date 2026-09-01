@@ -1,6 +1,6 @@
 import React from 'react';
 import { RepositoryItem, AnalysisRun, SubprojectItem } from '../../shared/types';
-import { Play, RefreshCw, CheckCircle2, Boxes, FolderOpen, Laptop } from 'lucide-react';
+import { Play, RefreshCw, CheckCircle2, Boxes, FolderOpen } from 'lucide-react';
 
 interface HeaderProps {
   currentRepo: RepositoryItem | null;
@@ -26,33 +26,33 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenLocalFolder
 }) => {
   return (
-    <header className="h-14 bg-gray-950/80 border-b border-gray-800 px-6 flex items-center justify-between gap-4">
+    <header className="h-12 bg-[#111318] border-b border-[#1E2330] px-5 flex items-center justify-between gap-4 select-none shrink-0 z-10">
       {/* Current Repo & Branch */}
-      <div className="flex items-center space-x-3 min-w-0">
+      <div className="flex items-center space-x-2.5 min-w-0">
         {currentRepo ? (
           <>
             <div className="flex items-center space-x-2 truncate">
-              <span className="text-xs font-semibold px-2 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-800/50 shrink-0">
+              <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-blue-950/60 text-blue-400 border border-blue-900/50 shrink-0 font-mono">
                 {currentRepo.projectKey}
               </span>
-              <span className="text-sm font-medium text-gray-200 truncate">{currentRepo.name}</span>
+              <span className="text-xs font-medium text-slate-200 truncate">{currentRepo.name}</span>
             </div>
-            <span className="text-gray-600 shrink-0">/</span>
-            <span className="text-xs font-mono px-2 py-0.5 rounded bg-gray-900 text-gray-300 border border-gray-800 shrink-0">
-              git: {selectedBranch}
+            <span className="text-slate-600 shrink-0">/</span>
+            <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-[#161922] text-slate-300 border border-[#1E2330] shrink-0">
+              {selectedBranch}
             </span>
 
             {/* Monorepo Subproject Selector */}
             {subprojects && subprojects.length > 0 && onSelectSubproject && (
-              <div className="flex items-center space-x-1.5 bg-purple-950/60 border border-purple-800/60 rounded-lg px-2 py-0.5 text-xs text-purple-300 shrink-0">
-                <Boxes size={13} className="text-purple-400" />
-                <span className="text-[10px] uppercase font-semibold">Модуль:</span>
+              <div className="flex items-center space-x-1.5 bg-[#161922] border border-[#2E3748] rounded px-2 py-0.5 text-xs text-slate-300 shrink-0">
+                <Boxes size={12} className="text-blue-400" />
+                <span className="text-[10px] uppercase font-semibold text-slate-400">Модуль:</span>
                 <select
                   value={selectedSubproject}
                   onChange={e => onSelectSubproject(e.target.value)}
-                  className="bg-purple-900/80 text-purple-100 border border-purple-700/80 rounded px-1.5 py-0.5 text-xs focus:outline-none cursor-pointer"
+                  className="bg-[#090A0F] text-slate-200 border border-[#1E2330] rounded px-1.5 py-0.5 text-xs focus:outline-none focus:border-blue-500 cursor-pointer"
                 >
-                  <option value="all">Весь монорепозиторий ({subprojects.length} подпроектов)</option>
+                  <option value="all">Весь монорепозиторий ({subprojects.length})</option>
                   {subprojects.map(sub => (
                     <option key={sub.id} value={sub.path}>
                       {sub.name} ({sub.path})
@@ -63,16 +63,16 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </>
         ) : (
-          <span className="text-xs text-gray-500">Репозиторий не выбран (выберите во вкладке «Репозитории»)</span>
+          <span className="text-xs text-slate-500">Репозиторий не выбран (выберите во вкладке «Репозитории»)</span>
         )}
       </div>
 
       {/* Action Buttons & Status */}
-      <div className="flex items-center space-x-2.5 shrink-0">
+      <div className="flex items-center space-x-2 shrink-0">
         {onOpenLocalFolder && (
           <button
             onClick={onOpenLocalFolder}
-            className="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg bg-gray-900 hover:bg-gray-800 border border-gray-700 text-gray-300 text-xs font-medium transition"
+            className="flex items-center space-x-1.5 px-2.5 py-1 rounded bg-[#161922] hover:bg-[#1E222D] border border-[#1E2330] text-slate-300 text-xs font-medium transition"
             title="Открыть локальную папку проекта"
           >
             <FolderOpen size={13} className="text-blue-400" />
@@ -81,25 +81,25 @@ export const Header: React.FC<HeaderProps> = ({
         )}
 
         {latestRun && (
-          <div className="hidden lg:flex items-center space-x-1.5 text-xs text-emerald-400 bg-emerald-950/40 border border-emerald-800/50 px-2.5 py-1 rounded-md">
-            <CheckCircle2 size={13} />
-            <span>Анализ ({latestRun.stats.durationMs || 0}ms)</span>
+          <div className="hidden lg:flex items-center space-x-1.5 text-[11px] text-emerald-400 bg-emerald-950/30 border border-emerald-900/40 px-2 py-0.5 rounded font-mono">
+            <CheckCircle2 size={12} />
+            <span>{latestRun.stats.durationMs || 0}ms</span>
           </div>
         )}
 
         <button
           onClick={onRunAnalysis}
           disabled={!currentRepo || isAnalyzing}
-          className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium transition disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-blue-600/20"
+          className="flex items-center space-x-1.5 px-3 py-1 rounded bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium transition disabled:opacity-40 disabled:cursor-not-allowed active:translate-y-[0.5px]"
         >
           {isAnalyzing ? (
             <>
-              <RefreshCw size={14} className="animate-spin" />
-              <span>Анализируем код...</span>
+              <RefreshCw size={13} className="animate-spin" />
+              <span>Анализ...</span>
             </>
           ) : (
             <>
-              <Play size={14} fill="currentColor" />
+              <Play size={13} fill="currentColor" />
               <span>Запустить анализ</span>
             </>
           )}
@@ -108,4 +108,5 @@ export const Header: React.FC<HeaderProps> = ({
     </header>
   );
 };
+
 

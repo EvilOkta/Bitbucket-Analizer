@@ -121,7 +121,7 @@ export const App: React.FC = () => {
   const handleNavigateToSource = (
     sourceFile: string,
     sourceLine?: number,
-    returnTab: string = 'api-map',
+    returnTab: NavTab = 'api-map',
     returnLabel: string = 'Назад к API'
   ) => {
     setFocusedSource({ file: sourceFile, line: sourceLine, returnTab, returnLabel });
@@ -129,13 +129,14 @@ export const App: React.FC = () => {
   };
 
   const handleBackToPrevious = () => {
-    const targetTab = focusedSource?.returnTab || 'api-map';
+    const targetTab = (focusedSource?.returnTab || 'api-map') as NavTab;
     setFocusedSource(null);
     setActiveTab(targetTab);
   };
 
+
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#0B0F19]">
+    <div className="flex h-screen w-screen overflow-hidden bg-[#090A0F] text-[#F1F5F9]">
       <Sidebar
         activeTab={activeTab}
         setActiveTab={(tab) => {
