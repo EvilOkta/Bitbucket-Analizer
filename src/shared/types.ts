@@ -472,3 +472,78 @@ export interface HierarchyNode {
   children?: HierarchyNode[];
 }
 
+// -------------------------------------------------------------
+// Autotests Module & Diagnostic Test Runner
+// -------------------------------------------------------------
+export type TestFramework = 'pytest' | 'vitest' | 'jest' | 'junit' | 'xunit' | 'nunit' | 'playwright' | 'cypress' | 'gtest' | 'unknown';
+export type TestCaseType = 'unit' | 'integration' | 'e2e' | 'form' | 'api';
+
+export interface TestCaseItem {
+  id: string;
+  name: string;
+  suiteName: string;
+  type: TestCaseType;
+  file: string;
+  line: number;
+  framework: TestFramework;
+  targetComponent?: string;
+  assertionsCount?: number;
+  status?: 'passed' | 'failed' | 'skipped' | 'pending';
+  durationMs?: number;
+}
+
+export interface TestSuiteItem {
+  id: string;
+  name: string;
+  file: string;
+  framework: TestFramework;
+  testCount: number;
+  tests: TestCaseItem[];
+}
+
+export interface TestCoverageMetrics {
+  totalEndpoints: number;
+  testedEndpoints: number;
+  endpointsCoveragePercent: number;
+  totalScreenForms: number;
+  testedScreenForms: number;
+  screenFormsCoveragePercent: number;
+  totalEntities: number;
+  testedEntities: number;
+  entitiesCoveragePercent: number;
+}
+
+export interface TestAnalysisResult {
+  suites: TestSuiteItem[];
+  totalTests: number;
+  frameworks: TestFramework[];
+  coverage: TestCoverageMetrics;
+}
+
+export interface DiagnosticTestResult {
+  name: string;
+  category: string;
+  passed: boolean;
+  durationMs: number;
+  details?: string;
+}
+
+export interface DiagnosticRunReport {
+  timestamp: string;
+  total: number;
+  passed: number;
+  failed: number;
+  durationMs: number;
+  results: DiagnosticTestResult[];
+}
+
+export interface GeneratedTestCode {
+  framework: TestFramework;
+  language: 'typescript' | 'python' | 'csharp';
+  targetType: 'endpoint' | 'screen_form';
+  targetName: string;
+  filename: string;
+  code: string;
+}
+
+

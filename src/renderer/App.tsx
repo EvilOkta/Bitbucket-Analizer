@@ -13,6 +13,7 @@ import { RecommendationsView } from './views/RecommendationsView';
 import { ConfluencePublishView } from './views/ConfluencePublishView';
 import { AuditLogsView } from './views/AuditLogsView';
 import { ProjectGraphView } from './views/ProjectGraphView';
+import { AutoTestsView } from './views/AutoTestsView';
 import { FullAnalysisResult } from '../engine/engineService';
 import { RepositoryItem } from '../shared/types';
 
@@ -218,6 +219,13 @@ export const App: React.FC = () => {
           )}
           {activeTab === 'recommendations' && (
             <RecommendationsView recommendations={analysisResult?.recommendations || []} />
+          )}
+          {activeTab === 'tests' && (
+            <AutoTestsView
+              testAnalysis={analysisResult?.testAnalysis}
+              endpoints={analysisResult?.endpoints}
+              screenForms={analysisResult?.screenForms}
+            />
           )}
           {activeTab === 'confluence' && <ConfluencePublishView analysis={analysisResult} />}
           {activeTab === 'audit' && <AuditLogsView />}

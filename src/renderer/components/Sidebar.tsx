@@ -13,7 +13,8 @@ import {
   KeyRound,
   ShieldCheck,
   PanelLeftClose,
-  PanelLeftOpen
+  PanelLeftOpen,
+  FlaskConical
 } from 'lucide-react';
 
 export type NavTab =
@@ -27,6 +28,7 @@ export type NavTab =
   | 'data-flows'
   | 'data-model'
   | 'recommendations'
+  | 'tests'
   | 'confluence'
   | 'audit';
 
@@ -65,11 +67,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
     { id: 'data-flows', label: 'Data Flows & Sequence', icon: <GitPullRequest size={16} /> },
     { id: 'data-model', label: 'Модель данных (ERD)', icon: <Database size={16} /> },
     { id: 'recommendations', label: 'Рекомендации', icon: <Lightbulb size={16} /> },
+    { id: 'tests', label: 'Автотесты & Runner', icon: <FlaskConical size={16} /> },
 
     { section: 'ИНТЕГРАЦИИ & БЕЗОПАСНОСТЬ', id: 'confluence', label: 'Confluence публикация', icon: <Share2 size={16} /> },
     { id: 'connections', label: 'Подключения & PAT', icon: <KeyRound size={16} /> },
     { id: 'audit', label: 'ИБ & Журнал аудита', icon: <ShieldCheck size={16} /> }
   ];
+
 
   return (
     <aside

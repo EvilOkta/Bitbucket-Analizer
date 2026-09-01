@@ -43,8 +43,14 @@ export const electronApi = {
   testQwenPrompt: (promptText: string): Promise<{ success: boolean; responseText: string; latencyMs?: number }> =>
     ipcRenderer.invoke('test-qwen-prompt', promptText),
 
+  // Autotests & Test Runner
+  runDiagnosticTests: (): Promise<any> => ipcRenderer.invoke('run-diagnostic-tests'),
+  generateTestCode: (targetType: 'endpoint' | 'screen_form', targetItem: any, framework: string): Promise<any> =>
+    ipcRenderer.invoke('generate-test-code', targetType, targetItem, framework),
+
   // Platform info
   getPlatform: (): string => process.platform
 };
 
 contextBridge.exposeInMainWorld('electronApi', electronApi);
+

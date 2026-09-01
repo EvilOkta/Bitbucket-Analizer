@@ -10,6 +10,7 @@ import {
   RepoType,
   StackProfile,
   SubprojectItem,
+  TestAnalysisResult,
   UiScreenForm
 } from '../shared/types';
 import { FileEntry, StackDetector } from './stack/stackDetector';
@@ -20,6 +21,7 @@ import { RuleEngine } from './rules/ruleEngine';
 import { QwenAdapter, QwenConfig } from './llm/qwenAdapter';
 import { MonorepoDetector } from './monorepo/monorepoDetector';
 import { RepoClassifier, RepoFingerprint } from './classifier/repoClassifier';
+import { TestExtractor } from './tests/testExtractor';
 
 export interface FullAnalysisResult {
   run: AnalysisRun;
@@ -30,6 +32,7 @@ export interface FullAnalysisResult {
   screenForms: UiScreenForm[];
   dataModel: DataModel;
   recommendations: Recommendation[];
+  testAnalysis?: TestAnalysisResult;
   isMonorepo?: boolean;
   subprojects?: SubprojectItem[];
   selectedSubproject?: string;
@@ -125,6 +128,9 @@ export class EngineService {
       }
     };
 
+    // 8. Analyze Tests and Test Coverage
+    const testAnalysis = TestExtractor.analyze(activeFiles, endpoints, screenForms, dataModel.entities);
+
     return {
       run,
       tree,
@@ -134,6 +140,7 @@ export class EngineService {
       screenForms,
       dataModel,
       recommendations,
+      testAnalysis,
       isMonorepo,
       subprojects: isMonorepo ? subprojects : undefined,
       selectedSubproject: subprojectPath || (isMonorepo ? 'all' : undefined),
