@@ -1,24 +1,24 @@
 import React, { useState } from 'react';
 import {
   LayoutDashboard,
-  FolderGit2,
   Network,
-  FolderTree,
-  Cpu,
-  Waypoints,
-  GitPullRequest,
+  Braces,
   Database,
-  Lightbulb,
-  Share2,
-  KeyRound,
   ShieldCheck,
+  Settings,
+  FolderGit2,
   PanelLeftClose,
-  PanelLeftOpen,
-  FlaskConical
+  PanelLeftOpen
 } from 'lucide-react';
 
 export type NavTab =
   | 'dashboard'
+  | 'architecture'
+  | 'code_api'
+  | 'data-model'
+  | 'qa_security'
+  | 'settings_export'
+  // Legacy aliases for backward compatibility:
   | 'connections'
   | 'repositories'
   | 'project-graph'
@@ -26,7 +26,6 @@ export type NavTab =
   | 'stack'
   | 'api-map'
   | 'data-flows'
-  | 'data-model'
   | 'recommendations'
   | 'tests'
   | 'confluence'
@@ -56,22 +55,26 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
     });
   };
 
-  const menuItems: { id: NavTab; label: string; icon: React.ReactNode; section?: string }[] = [
-    { section: 'ОБЗОР', id: 'dashboard', label: 'Панель управления', icon: <LayoutDashboard size={16} /> },
-    { id: 'repositories', label: 'Репозитории', icon: <FolderGit2 size={16} /> },
-    { id: 'project-graph', label: 'D3-Граф проектов', icon: <Network size={16} /> },
-    
-    { section: 'АРХИТЕКТУРА & КОД', id: 'explorer', label: 'Дерево проекта', icon: <FolderTree size={16} /> },
-    { id: 'stack', label: 'Стек технологий', icon: <Cpu size={16} /> },
-    { id: 'api-map', label: 'Карта API', icon: <Waypoints size={16} /> },
-    { id: 'data-flows', label: 'Data Flows & Sequence', icon: <GitPullRequest size={16} /> },
-    { id: 'data-model', label: 'Модель данных (ERD)', icon: <Database size={16} /> },
-    { id: 'recommendations', label: 'Рекомендации', icon: <Lightbulb size={16} /> },
-    { id: 'tests', label: 'Автотесты & Runner', icon: <FlaskConical size={16} /> },
+  // Maps active legacy tabs to corresponding parent hub for active indicator
+  const getEffectiveTab = (tab: NavTab): NavTab => {
+    if (tab === 'repositories' || tab === 'project-graph') return 'architecture';
+    if (tab === 'explorer' || tab === 'api-map' || tab === 'data-flows') return 'code_api';
+    if (tab === 'tests' || tab === 'recommendations' || tab === 'audit') return 'qa_security';
+    if (tab === 'connections' || tab === 'confluence') return 'settings_export';
+    if (tab === 'stack') return 'dashboard';
+    return tab;
+  };
 
-    { section: 'ИНТЕГРАЦИИ & БЕЗОПАСНОСТЬ', id: 'confluence', label: 'Confluence публикация', icon: <Share2 size={16} /> },
-    { id: 'connections', label: 'Подключения & PAT', icon: <KeyRound size={16} /> },
-    { id: 'audit', label: 'ИБ & Журнал аудита', icon: <ShieldCheck size={16} /> }
+  const effectiveTab = getEffectiveTab(activeTab);
+
+  const menuItems: { id: NavTab; label: string; icon: React.ReactNode; section?: string }[] = [
+    { section: 'СЕРДЦЕВИНА СИСТЕМЫ', id: 'dashboard', label: '1. Обзор & Инсайты', icon: <LayoutDashboard size={16} /> },
+    { id: 'architecture', label: '2. Архитектура & Проекты', icon: <Network size={16} /> },
+    { id: 'code_api', label: '3. Код, API & Flows Studio', icon: <Braces size={16} /> },
+    { id: 'data-model', label: '4. Модель данных & ERD', icon: <Database size={16} /> },
+    
+    { section: 'КАЧЕСТВО & ИНТЕГРАЦИИ', id: 'qa_security', label: '5. Качество & Безопасность', icon: <ShieldCheck size={16} /> },
+    { id: 'settings_export', label: '6. Интеграции & Экспорт', icon: <Settings size={16} /> }
   ];
 
 
@@ -126,13 +129,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
               className={`w-full flex items-center ${
                 isCollapsed ? 'justify-center px-0 py-2' : 'justify-start px-2.5 py-1.5'
               } text-xs font-medium transition-all group relative rounded ${
-                activeTab === item.id
+                effectiveTab === item.id
                   ? 'bg-blue-600/10 text-blue-300 border-l-2 border-blue-500 rounded-l-none'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-[#161922] border-l-2 border-transparent'
               }`}
             >
               <div className="flex items-center space-x-2.5 min-w-0">
-                <span className={`shrink-0 transition-colors ${activeTab === item.id ? 'text-blue-400' : 'text-slate-400 group-hover:text-slate-200'}`}>
+                <span className={`shrink-0 transition-colors ${effectiveTab === item.id ? 'text-blue-400' : 'text-slate-400 group-hover:text-slate-200'}`}>
                   {item.icon}
                 </span>
                 {!isCollapsed && <span className="truncate text-[11px]">{item.label}</span>}

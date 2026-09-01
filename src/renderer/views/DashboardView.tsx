@@ -43,27 +43,27 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ analysis, onNaviga
   const { run, stack, endpoints, flows, screenForms = [], dataModel, recommendations } = analysis;
 
   const statCards = [
-    { label: 'Файлов в репозитории', value: run.stats.totalFiles, sub: `${run.stats.totalLines.toLocaleString()} строк кода`, icon: <FileCode2 className="text-blue-400" size={16} />, tab: 'explorer' as NavTab },
-    { label: 'Экранных форм UI', value: screenForms.length, sub: `${screenForms.reduce((acc, f) => acc + (f.elements?.length || 0), 0)} UI элементов`, icon: <Layout className="text-blue-400" size={16} />, tab: 'data-flows' as NavTab },
-    { label: 'API Эндпоинтов', value: endpoints.length, sub: 'REST / RPC методы', icon: <Waypoints className="text-blue-400" size={16} />, tab: 'api-map' as NavTab },
-    { label: 'Data Flows & Sequences', value: flows.length, sub: 'Цепочки вызовов', icon: <GitPullRequest className="text-blue-400" size={16} />, tab: 'data-flows' as NavTab },
+    { label: 'Файлов в репозитории', value: run.stats.totalFiles, sub: `${run.stats.totalLines.toLocaleString()} строк кода`, icon: <FileCode2 className="text-blue-400" size={16} />, tab: 'code_api' as NavTab },
+    { label: 'Экранных форм UI', value: screenForms.length, sub: `${screenForms.reduce((acc, f) => acc + (f.elements?.length || 0), 0)} UI элементов`, icon: <Layout className="text-blue-400" size={16} />, tab: 'code_api' as NavTab },
+    { label: 'API Эндпоинтов', value: endpoints.length, sub: 'REST / RPC методы', icon: <Waypoints className="text-blue-400" size={16} />, tab: 'code_api' as NavTab },
+    { label: 'Data Flows & Sequences', value: flows.length, sub: 'Цепочки вызовов', icon: <GitPullRequest className="text-blue-400" size={16} />, tab: 'code_api' as NavTab },
     { label: 'Сущностей БД (PostgreSQL)', value: dataModel.entities.length, sub: `${dataModel.relationships.length} связей (FK)`, icon: <Database className="text-blue-400" size={16} />, tab: 'data-model' as NavTab },
-    { label: 'Рекомендаций по коду', value: recommendations.length, sub: 'Архитектура & ИБ', icon: <Lightbulb className="text-blue-400" size={16} />, tab: 'recommendations' as NavTab }
+    { label: 'Рекомендаций по коду', value: recommendations.length, sub: 'Архитектура & ИБ', icon: <Lightbulb className="text-blue-400" size={16} />, tab: 'qa_security' as NavTab }
   ];
 
   return (
-    <div className="p-5 space-y-4 overflow-y-auto h-full">
+    <div className="p-4 space-y-3.5 overflow-y-auto h-full">
       {/* Top Banner */}
-      <div className="bg-[#111318] border border-[#1E2330] p-4 rounded flex items-center justify-between">
+      <div className="bg-[#111318] border border-[#1E2330] p-3.5 rounded flex items-center justify-between">
         <div>
           <div className="flex items-center space-x-2">
-            <h2 className="text-base font-semibold text-slate-100">{run.repositoryName}</h2>
+            <h2 className="text-sm font-semibold text-slate-100 font-mono">{run.repositoryName}</h2>
             <span className="px-2 py-0.5 rounded bg-[#161922] text-blue-400 text-xs font-mono border border-[#1E2330]">
               {run.branch}
             </span>
           </div>
-          <p className="text-xs text-slate-400 mt-1 flex items-center space-x-2">
-            <span>Commit: <span className="font-mono text-slate-300">{run.commitHash}</span></span>
+          <p className="text-xs text-slate-400 mt-1 flex items-center space-x-2 font-mono">
+            <span>Commit: <span className="text-slate-300">{run.commitHash}</span></span>
             <span>•</span>
             <span className="flex items-center space-x-1">
               <Clock size={12} />
@@ -73,7 +73,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ analysis, onNaviga
         </div>
         <div className="flex items-center space-x-2">
           <button
-            onClick={() => onNavigate('confluence')}
+            onClick={() => onNavigate('settings_export')}
             className="flex items-center space-x-1.5 px-3 py-1.5 bg-[#161922] hover:bg-[#1E222D] text-slate-200 border border-[#1E2330] rounded text-xs font-medium transition"
           >
             <span>Опубликовать в Confluence</span>

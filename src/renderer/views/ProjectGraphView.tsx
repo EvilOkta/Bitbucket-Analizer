@@ -1065,37 +1065,32 @@ export const ProjectGraphView: React.FC<ProjectGraphViewProps> = ({ onAnalyzeRep
           </div>
         </div>
 
-        {/* Legend */}
-        <div className="absolute bottom-4 left-4 z-10 bg-[#111318] p-3 rounded border border-[#1E2330] text-[11px] space-y-1.5 shadow-xl max-w-xs select-none">
-          <div className="font-semibold text-slate-200 flex items-center space-x-1.5">
-            <Sparkles size={13} className="text-blue-400" />
-            <span>Категории и типы узлов:</span>
+        {/* Compact HUD Legend & Status Pill */}
+        <div className="absolute bottom-3 left-3 z-10 bg-[#111318]/95 p-2 rounded border border-[#1E2330] text-[10px] space-y-1 shadow-lg backdrop-blur select-none max-w-[280px]">
+          <div className="flex items-center justify-between gap-2 border-b border-[#1E2330] pb-1 font-mono">
+            <span className="text-slate-300 font-semibold flex items-center space-x-1">
+              <Sparkles size={11} className="text-blue-400" />
+              <span>Легенда узлов:</span>
+            </span>
+            <span className="text-[9px] text-slate-500">Двойной клик: детали</span>
           </div>
-          <div className="grid grid-cols-2 gap-1.5 pt-0.5 text-[10px] text-slate-300 font-mono">
+          <div className="grid grid-cols-2 gap-1 pt-0.5 text-[9px] text-slate-300 font-mono">
             <span className="flex items-center space-x-1">
-              <span className="w-2 h-2 rounded-full bg-purple-500 inline-block" />
-              <span>Монорепозиторий</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-purple-500 inline-block" />
+              <span className="truncate">Монорепозиторий</span>
             </span>
             <span className="flex items-center space-x-1">
-              <span className="w-2 h-2 rounded-full bg-amber-500 inline-block" />
-              <span>Версия / Копия</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block" />
+              <span className="truncate">Версия / Копия</span>
             </span>
             <span className="flex items-center space-x-1">
-              <span className="w-2 h-2 rounded-full bg-cyan-500 inline-block" />
-              <span>Подпроект</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 inline-block" />
+              <span className="truncate">Подпроект</span>
             </span>
             <span className="flex items-center space-x-1">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
-              <span>Локальный репо</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+              <span className="truncate">Локальный</span>
             </span>
-          </div>
-          <div className="flex items-center space-x-2 pt-1 border-t border-[#1E2330]">
-            <span className="text-[10px] text-emerald-400 font-mono">Свежие</span>
-            <div className="h-1 flex-1 rounded bg-gradient-to-r from-emerald-500 via-amber-400 to-rose-500 border border-[#1E2330]" />
-            <span className="text-[10px] text-rose-400 font-mono">Ранние</span>
-          </div>
-          <div className="text-[10px] text-slate-500 pt-0.5">
-            Двойной клик по узлу раскрывает детали на следующем уровне.
           </div>
         </div>
 
