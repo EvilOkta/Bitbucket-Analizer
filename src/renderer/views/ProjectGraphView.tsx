@@ -331,6 +331,7 @@ export const ProjectGraphView: React.FC<ProjectGraphViewProps> = ({ onAnalyzeRep
   const [selectedBranchName, setSelectedBranchName] = useState<string>('');
   const [includeBranchesInProjectMode, setIncludeBranchesInProjectMode] = useState<boolean>(false);
   const [repoFilter, setRepoFilter] = useState<'all' | 'subprojects' | 'branches'>('all');
+  const [graphLayout, setGraphLayout] = useState<'force' | 'radial'>('force');
 
   const svgRef = useRef<SVGSVGElement | null>(null);
   const simulationRef = useRef<d3.Simulation<D3GraphNode, D3GraphLink> | null>(null);
@@ -1031,8 +1032,30 @@ export const ProjectGraphView: React.FC<ProjectGraphViewProps> = ({ onAnalyzeRep
             )}
           </div>
 
-          {/* Action buttons */}
-          <div className="flex items-center space-x-1.5">
+          {/* Action buttons & Layout Switcher */}
+          <div className="flex items-center space-x-2">
+            {/* Layout Switcher: Force vs Radial */}
+            <div className="flex items-center space-x-0.5 bg-[#161922] p-0.5 rounded border border-[#1E2330] text-[11px] font-mono">
+              <button
+                onClick={() => setGraphLayout('force')}
+                className={`px-2 py-0.5 rounded transition ${
+                  graphLayout === 'force' ? 'bg-blue-600 text-white font-medium shadow' : 'text-slate-400 hover:text-slate-200'
+                }`}
+                title="Физическая гравитация (Force Gravity)"
+              >
+                Force
+              </button>
+              <button
+                onClick={() => setGraphLayout('radial')}
+                className={`px-2 py-0.5 rounded transition ${
+                  graphLayout === 'radial' ? 'bg-blue-600 text-white font-medium shadow' : 'text-slate-400 hover:text-slate-200'
+                }`}
+                title="Радиально-иерархическое дерево (Radial Hierarchy)"
+              >
+                Radial
+              </button>
+            </div>
+
             <button
               onClick={() => handleZoom(1.3)}
               className="p-1.5 bg-[#161922] hover:bg-[#1E222D] text-slate-300 border border-[#1E2330] rounded transition"

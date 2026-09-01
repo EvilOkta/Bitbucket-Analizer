@@ -130,6 +130,36 @@ export const App: React.FC = () => {
     }
   };
 
+  const getTabLabel = (tab: NavTab): string => {
+    switch (tab) {
+      case 'dashboard':
+      case 'stack':
+        return 'Обзор & Инсайты';
+      case 'architecture':
+      case 'project-graph':
+      case 'repositories':
+        return 'Архитектура & Проекты';
+      case 'code_api':
+      case 'api-map':
+      case 'explorer':
+      case 'data-flows':
+        return 'Код, API & Flows';
+      case 'data-model':
+        return 'Модель данных (ERD)';
+      case 'qa_security':
+      case 'tests':
+      case 'recommendations':
+      case 'audit':
+        return 'Качество & Безопасность';
+      case 'settings_export':
+      case 'connections':
+      case 'confluence':
+        return 'Интеграции & Экспорт';
+      default:
+        return 'Хаб';
+    }
+  };
+
   return (
     <div className="flex h-screen w-screen bg-[#090A0F] text-[#F1F5F9] overflow-hidden select-none">
       {/* 6-Hubs Sidebar */}
@@ -157,6 +187,7 @@ export const App: React.FC = () => {
           onSelectSubproject={handleSelectSubproject}
           onOpenLocalFolder={handleOpenLocalFolder}
           onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+          activeTabLabel={getTabLabel(activeTab)}
         />
 
         {/* Primary Hub Views Routing */}

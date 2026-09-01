@@ -920,11 +920,11 @@ ${selectedFlow.sequenceDiagramPlantUml || selectedFlow.sequenceDiagramMermaid ||
           </div>
         )}
 
-        {/* ================= CENTER MAIN AREA: FULL-HEIGHT SEQUENCE DIAGRAM VISUALIZER ================= */}
+        {/* ================= CENTER MAIN AREA: FULL-HEIGHT SEQUENCE / D3 STRUCTURE VISUALIZER ================= */}
         <div className="flex-1 flex flex-col h-full overflow-hidden p-3 space-y-2 bg-[#090A0F] min-w-0">
           {activeMode === 'forms' && selectedElement ? (
             <>
-              {/* Selected Element Header Bar */}
+              {/* Selected Element Header Bar & Inline View Mode Switcher */}
               <div className="bg-[#111318] p-2 px-3 rounded border border-[#1E2330] flex flex-wrap items-center justify-between gap-2 shrink-0 select-none">
                 <div className="flex items-center space-x-2.5 min-w-0">
                   <span className="text-xs font-semibold font-mono text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800/60 shrink-0">
@@ -939,19 +939,36 @@ ${selectedFlow.sequenceDiagramPlantUml || selectedFlow.sequenceDiagramMermaid ||
                 <div className="flex items-center space-x-3 text-xs font-mono text-slate-400 shrink-0">
                   <span>Маршрут: <strong className="text-slate-200">{selectedForm?.route}</strong></span>
 
-                  {/* Show Structure Button */}
-                  <button
-                    onClick={() => setIsStructureModalOpen(true)}
-                    className="flex items-center space-x-1.5 px-2.5 py-1 bg-[#161922] hover:bg-[#1E222D] border border-[#1E2330] text-emerald-300 rounded text-xs font-semibold transition group"
-                    title="Открыть интерактивную D3 структуру экранной формы"
-                  >
-                    <Layers3 size={13} className="text-emerald-400 group-hover:scale-110 transition-transform" />
-                    <span>Показать структуру</span>
-                  </button>
+                  {/* Inline Mode Switcher: Sequence vs D3 Form Structure */}
+                  <div className="flex items-center space-x-1 bg-[#161922] p-0.5 rounded border border-[#1E2330]">
+                    <button
+                      onClick={() => setIsStructureModalOpen(false)}
+                      className={`px-2.5 py-1 rounded transition flex items-center space-x-1.5 ${
+                        !isStructureModalOpen
+                          ? 'bg-blue-600 text-white font-medium shadow'
+                          : 'text-slate-400 hover:text-slate-200'
+                      }`}
+                    >
+                      <GitPullRequest size={12} />
+                      <span>Sequence</span>
+                    </button>
+
+                    <button
+                      onClick={() => setIsStructureModalOpen(true)}
+                      className={`px-2.5 py-1 rounded transition flex items-center space-x-1.5 ${
+                        isStructureModalOpen
+                          ? 'bg-blue-600 text-white font-medium shadow'
+                          : 'text-slate-400 hover:text-slate-200'
+                      }`}
+                    >
+                      <Layers3 size={12} />
+                      <span>D3 Структура формы</span>
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              {/* Full-Height Sequence Visualizer with PlantUML & Mermaid */}
+              {/* Center Canvas: Full-Height Sequence Visualizer */}
               <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
                 <MermaidViewer
                   chart={selectedElement.sequenceDiagramMermaid || ''}
@@ -960,6 +977,34 @@ ${selectedFlow.sequenceDiagramPlantUml || selectedFlow.sequenceDiagramMermaid ||
                   className="flex-1"
                 />
               </div>
+
+              {/* Bottom Interactive Horizontal Stepper */}
+              {selectedElement.sequenceSteps && selectedElement.sequenceSteps.length > 0 && (
+                <div className="p-2 bg-[#111318] rounded border border-[#1E2330] shrink-0 overflow-x-auto">
+                  <div className="flex items-center space-x-2 text-[11px] font-mono min-w-max">
+                    <span className="text-slate-500 font-semibold uppercase text-[10px] mr-1">Шаги:</span>
+                    {selectedElement.sequenceSteps.map((step, sIdx) => (
+                      <div
+                        key={step.order}
+                        onClick={() => step.sourceFile && onNavigateToSource?.(step.sourceFile, step.sourceLine || 1)}
+                        className={`flex items-center space-x-1.5 px-2 py-1 rounded bg-[#161922] border border-[#1E2330] ${
+                          step.sourceFile ? 'cursor-pointer hover:border-blue-500/50 hover:bg-[#1E222D] text-slate-200' : 'text-slate-400'
+                        }`}
+                      >
+                        <span className="w-3.5 h-3.5 rounded-full bg-blue-950 text-blue-400 border border-blue-900 flex items-center justify-center text-[9px] font-bold">
+                          {step.order}
+                        </span>
+                        <span className="text-slate-300 font-medium">{step.from}</span>
+                        <ArrowRight size={10} className="text-slate-600" />
+                        <span className="text-emerald-400">{step.to}</span>
+                        {sIdx < (selectedElement.sequenceSteps?.length || 0) - 1 && (
+                          <span className="text-slate-600 ml-1.5">➔</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </>
           ) : activeMode === 'backend' && selectedFlow ? (
             <>

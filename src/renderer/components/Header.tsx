@@ -13,6 +13,7 @@ interface HeaderProps {
   onSelectSubproject?: (subproject: string) => void;
   onOpenLocalFolder?: () => void;
   onOpenCommandPalette?: () => void;
+  activeTabLabel?: string;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -25,7 +26,8 @@ export const Header: React.FC<HeaderProps> = ({
   selectedSubproject = 'all',
   onSelectSubproject,
   onOpenLocalFolder,
-  onOpenCommandPalette
+  onOpenCommandPalette,
+  activeTabLabel
 }) => {
   return (
     <header className="h-12 bg-[#111318] border-b border-[#1E2330] px-4 flex items-center justify-between gap-3 select-none shrink-0 z-10">
@@ -43,6 +45,14 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#161922] text-slate-300 border border-[#1E2330] shrink-0">
               {selectedBranch}
             </span>
+            {activeTabLabel && (
+              <>
+                <span className="text-slate-600 shrink-0">/</span>
+                <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-blue-950/30 text-blue-300 border border-blue-900/40 shrink-0 font-mono">
+                  {activeTabLabel}
+                </span>
+              </>
+            )}
 
             {/* Monorepo Subproject Selector */}
             {subprojects && subprojects.length > 0 && onSelectSubproject && (

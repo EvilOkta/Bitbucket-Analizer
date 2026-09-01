@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { ApiEndpoint, DtoProperty } from '../../shared/types';
+import { ApiEndpoint, DtoProperty, ApiParam } from '../../shared/types';
 import {
   Waypoints,
   Search,
@@ -19,18 +19,14 @@ import {
   Hash,
   ExternalLink,
   ChevronRight,
-  ChevronDown,
   Filter,
   Server,
-  ChevronsUpDown,
-  ChevronsDown,
-  ChevronsUp,
   PanelLeftClose,
   PanelLeftOpen,
-  X,
   Sparkles,
   ArrowRight,
-  Layers3
+  Database,
+  FileText
 } from 'lucide-react';
 
 interface ApiMapViewProps {
@@ -38,54 +34,24 @@ interface ApiMapViewProps {
   onNavigateToSource?: (sourceFile: string, sourceLine?: number) => void;
 }
 
-interface ModalDtoData {
-  title: string;
-  statusCode?: number;
-  description?: string;
-  modelName?: string;
-  isArray?: boolean;
-  isPrimitive?: boolean;
-  itemType?: string;
-  properties?: DtoProperty[];
-  exampleJson?: any;
-  schema?: string;
-}
+type InspectorTab = 'spec' | 'dto' | 'code';
 
 export const ApiMapView: React.FC<ApiMapViewProps> = ({ endpoints, onNavigateToSource }) => {
   const [search, setSearch] = useState('');
   const [methodFilter, setMethodFilter] = useState('ALL');
   const [selectedController, setSelectedController] = useState('ALL');
-  
-  // Track set of expanded method IDs for inline accordion spoilers
-  const [expandedEndpointIds, setExpandedEndpointIds] = useState<Set<string>>(() => {
-    const initial = new Set<string>();
-    if (endpoints.length > 0) {
-      initial.add(endpoints[0].id);
-    }
-    return initial;
-  });
-
-  // Track collapsed controller sidebar on the left
   const [isControllersOpen, setIsControllersOpen] = useState(true);
 
-  const [copiedPathId, setCopiedPathId] = useState<string | null>(null);
-  const [copiedJsonId, setCopiedJsonId] = useState<string | null>(null);
+  // Selected endpoint in 3-column layout
+  const [selectedEndpointId, setSelectedEndpointId] = useState<string>(() => {
+    return endpoints.length > 0 ? endpoints[0].id : '';
+  });
 
-  // Response DTO Modal State
-  const [activeDtoModal, setActiveDtoModal] = useState<ModalDtoData | null>(null);
+  const [activeInspectorTab, setActiveInspectorTab] = useState<InspectorTab>('spec');
+  const [copiedPath, setCopiedPath] = useState(false);
+  const [copiedJson, setCopiedJson] = useState(false);
 
-  // Close modal on Escape
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setActiveDtoModal(null);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  // Group controllers with their endpoint counts ONLY (no nested method lists)
+  // Group controllers with their endpoint counts
   const controllersWithCounts = useMemo(() => {
     const map = new Map<string, number>();
     endpoints.forEach(ep => {
@@ -109,8 +75,22 @@ export const ApiMapView: React.FC<ApiMapViewProps> = ({ endpoints, onNavigateToS
     });
   }, [endpoints, search, methodFilter, selectedController]);
 
+  // Keep selected endpoint valid if filtered list changes
+  useEffect(() => {
+    if (filteredEndpoints.length > 0) {
+      const exists = filteredEndpoints.some(e => e.id === selectedEndpointId);
+      if (!exists) {
+        setSelectedEndpointId(filteredEndpoints[0].id);
+      }
+    }
+  }, [filteredEndpoints, selectedEndpointId]);
+
+  const selectedEndpoint = useMemo(() => {
+    return endpoints.find(e => e.id === selectedEndpointId) || filteredEndpoints[0] || null;
+  }, [endpoints, filteredEndpoints, selectedEndpointId]);
+
   // Counts by HTTP method
-  const getMethodCounts = useMemo(() => {
+  const methodCounts = useMemo(() => {
     const counts: Record<string, number> = { ALL: endpoints.length, GET: 0, POST: 0, PUT: 0, DELETE: 0, PATCH: 0 };
     endpoints.forEach(e => {
       if (counts[e.method] !== undefined) {
@@ -120,854 +100,589 @@ export const ApiMapView: React.FC<ApiMapViewProps> = ({ endpoints, onNavigateToS
     return counts;
   }, [endpoints]);
 
-  const toggleEndpointExpand = (id: string) => {
-    setExpandedEndpointIds(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-      return next;
-    });
-  };
-
-  const handleExpandAll = () => {
-    const allIds = new Set(filteredEndpoints.map(e => e.id));
-    setExpandedEndpointIds(allIds);
-  };
-
-  const handleCollapseAll = () => {
-    setExpandedEndpointIds(new Set());
-  };
-
   const getMethodTheme = (m: string) => {
     switch (m) {
       case 'GET':
         return {
           badge: 'bg-blue-950/60 text-blue-400 border-blue-800/60',
-          border: 'border-[#1E2330] hover:border-blue-500/60',
-          activeBg: 'bg-[#111318] border-blue-500/80 shadow-md',
-          headerBg: 'bg-[#161922] hover:bg-[#1E222D]',
+          activeBg: 'bg-blue-950/30 border-blue-500/60 text-blue-200',
           text: 'text-blue-400'
         };
       case 'POST':
         return {
           badge: 'bg-emerald-950/60 text-emerald-400 border-emerald-800/60',
-          border: 'border-[#1E2330] hover:border-emerald-500/60',
-          activeBg: 'bg-[#111318] border-emerald-500/80 shadow-md',
-          headerBg: 'bg-[#161922] hover:bg-[#1E222D]',
+          activeBg: 'bg-emerald-950/30 border-emerald-500/60 text-emerald-200',
           text: 'text-emerald-400'
         };
       case 'PUT':
         return {
           badge: 'bg-amber-950/60 text-amber-400 border-amber-800/60',
-          border: 'border-[#1E2330] hover:border-amber-500/60',
-          activeBg: 'bg-[#111318] border-amber-500/80 shadow-md',
-          headerBg: 'bg-[#161922] hover:bg-[#1E222D]',
+          activeBg: 'bg-amber-950/30 border-amber-500/60 text-amber-200',
           text: 'text-amber-400'
         };
       case 'DELETE':
         return {
           badge: 'bg-rose-950/60 text-rose-400 border-rose-800/60',
-          border: 'border-[#1E2330] hover:border-rose-500/60',
-          activeBg: 'bg-[#111318] border-rose-500/80 shadow-md',
-          headerBg: 'bg-[#161922] hover:bg-[#1E222D]',
+          activeBg: 'bg-rose-950/30 border-rose-500/60 text-rose-200',
           text: 'text-rose-400'
         };
       case 'PATCH':
         return {
           badge: 'bg-purple-950/60 text-purple-400 border-purple-800/60',
-          border: 'border-[#1E2330] hover:border-purple-500/60',
-          activeBg: 'bg-[#111318] border-purple-500/80 shadow-md',
-          headerBg: 'bg-[#161922] hover:bg-[#1E222D]',
+          activeBg: 'bg-purple-950/30 border-purple-500/60 text-purple-200',
           text: 'text-purple-400'
         };
       default:
         return {
           badge: 'bg-[#090A0F] text-slate-300 border-[#1E2330]',
-          border: 'border-[#1E2330] hover:border-[#2E3748]',
-          activeBg: 'bg-[#111318] border-[#2E3748]',
-          headerBg: 'bg-[#161922] hover:bg-[#1E222D]',
+          activeBg: 'bg-[#161922] border-[#2E3748] text-slate-200',
           text: 'text-slate-300'
         };
     }
   };
 
-  const handleCopy = (text: string, type: string, id: string) => {
-    navigator.clipboard.writeText(text);
-    if (type === 'path') {
-      setCopiedPathId(id);
-      setTimeout(() => setCopiedPathId(null), 2000);
-    } else {
-      setCopiedJsonId(id);
-      setTimeout(() => setCopiedJsonId(null), 2000);
-    }
+  const handleCopyPath = (path: string) => {
+    navigator.clipboard.writeText(path);
+    setCopiedPath(true);
+    setTimeout(() => setCopiedPath(false), 2000);
   };
 
-  const openResponseModal = (ep: ApiEndpoint, resp?: any) => {
-    const rawDto = resp?.modelName || ep.responseDto || ep.responseBody?.modelName || 'ApiResponseDTO';
-    const isArr = resp?.isArray !== undefined
-      ? resp.isArray
-      : (rawDto.includes('[]') || rawDto.startsWith('List') || Boolean(ep.responseBody?.isArray));
-    const itemModel = resp?.itemType || ep.responseBody?.itemType || rawDto.replace(/\[\]|List<|>/g, '');
-    const isPrim = resp?.isPrimitive !== undefined
-      ? resp.isPrimitive
-      : (['int', 'integer', 'long', 'string', 'boolean', 'float', 'double', 'uuid', 'number'].includes(itemModel.toLowerCase()) || Boolean(ep.responseBody?.isPrimitive));
-    
-    const props = resp?.properties || ep.responseBody?.properties || (isPrim ? [
-      { name: 'value', type: itemModel, description: `Значение типа ${itemModel}`, required: true, example: isPrim && itemModel.includes('int') ? 42 : isPrim && itemModel.includes('bool') ? true : 'example' }
-    ] : [
-      { name: 'id', type: 'UUID', description: 'Уникальный идентификатор сущности', required: true, example: '3fa85f64-5717-4562-b3fc-2c963f66afa6' },
-      { name: 'name', type: 'string', description: 'Наименование / заголовок', required: true, example: `${itemModel} sample` },
-      { name: 'createdAt', type: 'DateTime', description: 'Дата создания', required: false, example: new Date().toISOString() }
-    ]);
-
-    const sampleJson = resp?.exampleJson || ep.responseBody?.exampleJson || (isArr ? (isPrim ? [42, 100] : [{ id: '3fa85f64-5717-4562-b3fc-2c963f66afa6', name: `${itemModel} 1` }]) : (isPrim ? 42 : { id: '3fa85f64-5717-4562-b3fc-2c963f66afa6', name: `${itemModel} sample` }));
-
-    setActiveDtoModal({
-      title: rawDto,
-      modelName: rawDto,
-      statusCode: resp?.statusCode || 200,
-      description: resp?.description || (resp?.statusCode === 200 ? 'Успешный ответ сервера' : 'Схема ответа API'),
-      isArray: isArr,
-      isPrimitive: isPrim,
-      itemType: itemModel,
-      properties: props,
-      exampleJson: sampleJson,
-      schema: resp?.schema || ep.responseSchema
-    });
+  const handleCopyJson = (json: any) => {
+    navigator.clipboard.writeText(typeof json === 'string' ? json : JSON.stringify(json, null, 2));
+    setCopiedJson(true);
+    setTimeout(() => setCopiedJson(false), 2000);
   };
 
-  const exportOpenApi = () => {
-    const openApiDoc = {
+  const handleExportOpenApi = () => {
+    const openapi = {
       openapi: '3.0.3',
-      info: {
-        title: 'Bitbucket Repo Extracted API',
-        version: '1.0.0',
-        description: 'Сгенерировано автоматически модулем архитектурного анализа Bitbucket'
-      },
+      info: { title: 'Bitbucket Architecture Export', version: '1.0.0' },
       paths: {} as Record<string, any>
     };
 
     endpoints.forEach(ep => {
-      const fullPath = ep.fullPath || ep.path;
-      if (!openApiDoc.paths[fullPath]) {
-        openApiDoc.paths[fullPath] = {};
-      }
-
-      openApiDoc.paths[fullPath][ep.method.toLowerCase()] = {
-        summary: ep.description || `${ep.method} ${fullPath}`,
-        operationId: ep.operationId || ep.handler,
-        tags: [ep.controller || 'Default'],
-        parameters: ep.requestParams?.map(p => ({
-          name: p.name,
-          in: p.in || 'query',
-          required: p.required || false,
-          schema: { type: p.type.toLowerCase() }
-        })) || [],
+      const p = ep.path || '/';
+      if (!openapi.paths[p]) openapi.paths[p] = {};
+      openapi.paths[p][ep.method.toLowerCase()] = {
+        summary: ep.description || ep.handler,
+        operationId: ep.operationId || ep.id,
+        tags: [ep.controller || 'default'],
+        parameters: ep.requestParams?.map(param => ({
+          name: param.name,
+          in: param.in,
+          required: param.required,
+          schema: { type: param.type || 'string' }
+        })),
         responses: {
           '200': {
-            description: 'Success',
-            content: (ep.responseDto || ep.responseBody) ? {
+            description: ep.responseDto ? `Returns ${ep.responseDto}` : 'Success',
+            content: {
               'application/json': {
-                schema: { $ref: `#/components/schemas/${ep.responseDto || ep.responseBody?.modelName}` }
+                schema: { type: 'object' }
               }
-            } : undefined
+            }
           }
         }
       };
     });
 
-    const blob = new Blob([JSON.stringify(openApiDoc, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(openapi, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = 'openapi-spec.json';
     a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
-    <div className="flex h-full w-full overflow-hidden bg-[#090A0F] text-[#F1F5F9] relative select-none">
-      {/* ================= LEFT CONTROLLERS PANEL (COLLAPSIBLE) ================= */}
-      {isControllersOpen ? (
-        <div className="w-56 shrink-0 border-r border-[#1E2330] flex flex-col h-full bg-[#111318] transition-all duration-150 ease-in-out select-none">
-          <div className="p-2.5 border-b border-[#1E2330] flex items-center justify-between shrink-0">
-            <div className="flex items-center space-x-1.5 min-w-0">
-              <Server size={13} className="text-blue-400 shrink-0" />
-              <span className="text-xs font-semibold text-slate-200 truncate uppercase tracking-wider">Контроллеры</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <span className="text-[10px] font-mono text-blue-400 bg-[#090A0F] px-1.5 py-0.2 rounded border border-[#1E2330]">
-                {controllersWithCounts.length}
-              </span>
-              <button
-                onClick={() => setIsControllersOpen(false)}
-                className="p-1 hover:bg-[#1E222D] text-slate-400 hover:text-slate-200 rounded transition"
-                title="Свернуть панель контроллеров"
-              >
-                <PanelLeftClose size={13} />
-              </button>
-            </div>
-          </div>
-
-          <div className="flex-1 overflow-y-auto p-1.5 space-y-1">
-            {/* ALL Controllers Filter Button */}
-            <button
-              onClick={() => setSelectedController('ALL')}
-              className={`w-full flex items-center justify-between p-2 rounded text-xs transition border ${
-                selectedController === 'ALL'
-                  ? 'bg-blue-600/15 text-blue-200 border-blue-500/70 shadow-sm font-semibold'
-                  : 'bg-[#161922] text-slate-300 border-[#1E2330] hover:bg-[#1E222D] hover:text-white'
-              }`}
-            >
-              <span className="truncate text-[11px]">Все контроллеры</span>
-              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-[#090A0F] text-slate-400 border border-[#1E2330] shrink-0 ml-1">
-                {endpoints.length}
-              </span>
-            </button>
-
-            {/* Controllers list */}
-            {controllersWithCounts.map(c => {
-              const isSelected = selectedController === c.name;
-              return (
-                <button
-                  key={c.name}
-                  onClick={() => setSelectedController(c.name)}
-                  className={`w-full flex items-center justify-between p-2 rounded text-xs transition border ${
-                    isSelected
-                      ? 'bg-blue-600/15 text-blue-200 border-blue-500/70 shadow-sm font-semibold'
-                      : 'bg-[#161922] text-slate-300 border-[#1E2330] hover:bg-[#1E222D] hover:text-white'
-                  }`}
-                >
-                  <div className="flex items-center space-x-1.5 min-w-0 truncate">
-                    <FolderKanban size={12} className={isSelected ? 'text-blue-400' : 'text-slate-500'} />
-                    <span className="truncate font-mono text-[11px]">{c.name}</span>
-                  </div>
-                  <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded border shrink-0 ml-1.5 ${
-                    isSelected
-                      ? 'bg-blue-950/60 text-blue-300 border-blue-800/60'
-                      : 'bg-[#090A0F] text-slate-400 border-[#1E2330]'
-                  }`}>
-                    {c.count}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      ) : (
-        /* Collapsed Icon Bar for Controllers */
-        <div className="w-10 shrink-0 border-r border-[#1E2330] bg-[#111318] flex flex-col items-center py-2.5 space-y-2 select-none">
+    <div className="flex flex-col h-full bg-[#090A0F] text-[#F1F5F9] select-none overflow-hidden">
+      {/* Top Filter Bar */}
+      <div className="p-3 border-b border-[#1E2330] bg-[#111318] flex flex-wrap items-center justify-between gap-3 shrink-0">
+        <div className="flex items-center space-x-2.5">
           <button
-            onClick={() => setIsControllersOpen(true)}
-            className="p-1.5 rounded bg-[#161922] hover:bg-[#1E222D] text-blue-400 border border-[#1E2330] transition"
-            title="Развернуть панель контроллеров"
+            onClick={() => setIsControllersOpen(prev => !prev)}
+            className="p-1.5 rounded hover:bg-[#161922] border border-[#1E2330] text-slate-400 hover:text-slate-200 transition"
+            title={isControllersOpen ? 'Скрыть контроллеры' : 'Показать контроллеры'}
           >
-            <PanelLeftOpen size={14} />
+            {isControllersOpen ? <PanelLeftClose size={14} /> : <PanelLeftOpen size={14} className="text-blue-400" />}
           </button>
-          <div className="w-4 h-[1px] bg-[#1E2330] my-1" />
-          <span className="text-[10px] font-mono text-slate-500 [writing-mode:vertical-lr] tracking-widest uppercase rotate-180">
-            Контроллеры ({controllersWithCounts.length})
-          </span>
-        </div>
-      )}
 
-      {/* ================= MAIN SWAGGER METHODS VIEW (INLINE SPOILERS / ACCORDION) ================= */}
-      <div className="flex-1 flex flex-col h-full overflow-hidden min-w-0 bg-[#090A0F]">
-        {/* Top Swagger Toolbar */}
-        <div className="p-3 border-b border-[#1E2330] bg-[#111318] flex flex-wrap items-center justify-between gap-2.5 z-10 shrink-0">
+          {/* Search Box */}
+          <div className="relative w-64">
+            <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500" />
+            <input
+              type="text"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Поиск по методам, путям, DTO..."
+              className="w-full bg-[#0D0E14] border border-[#1E2330] rounded pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 font-mono"
+            />
+          </div>
+
           {/* Method Filter Pills */}
-          <div className="flex flex-wrap items-center gap-1">
+          <div className="flex items-center space-x-1 bg-[#161922] p-0.5 rounded border border-[#1E2330] text-[11px] font-mono">
             {['ALL', 'GET', 'POST', 'PUT', 'DELETE', 'PATCH'].map(m => {
+              const count = methodCounts[m] || 0;
               const isActive = methodFilter === m;
               return (
                 <button
                   key={m}
                   onClick={() => setMethodFilter(m)}
-                  className={`px-2 py-0.5 rounded text-xs font-mono font-medium transition flex items-center space-x-1 border ${
-                    isActive
-                      ? m === 'ALL'
-                        ? 'bg-blue-600 text-white border-blue-500'
-                        : m === 'GET'
-                        ? 'bg-blue-600 text-white border-blue-500'
-                        : m === 'POST'
-                        ? 'bg-emerald-600 text-white border-emerald-500'
-                        : m === 'PUT'
-                        ? 'bg-amber-600 text-white border-amber-500'
-                        : m === 'DELETE'
-                        ? 'bg-rose-600 text-white border-rose-500'
-                        : 'bg-purple-600 text-white border-purple-500'
-                      : 'bg-[#161922] text-slate-400 hover:text-slate-200 border-[#1E2330]'
+                  className={`px-2 py-0.5 rounded transition ${
+                    isActive ? 'bg-blue-600 text-white font-medium shadow' : 'text-slate-400 hover:text-slate-200'
                   }`}
                 >
                   <span>{m}</span>
-                  <span className={`text-[9px] px-1 rounded ${isActive ? 'bg-black/30 text-white' : 'bg-[#090A0F] text-slate-400'}`}>
-                    {getMethodCounts[m] || 0}
-                  </span>
+                  <span className="ml-1 opacity-70">({count})</span>
                 </button>
               );
             })}
           </div>
-
-          {/* Bulk Spoilers Controls + Search + Export */}
-          <div className="flex items-center space-x-2 shrink-0">
-            {/* Expand / Collapse All Spoilers */}
-            <div className="flex items-center space-x-1 bg-[#161922] p-0.5 rounded border border-[#1E2330] text-xs">
-              <button
-                onClick={handleExpandAll}
-                className="px-2 py-0.5 hover:bg-[#1E222D] text-slate-300 rounded text-[11px] flex items-center space-x-1 transition"
-                title="Развернуть все методы"
-              >
-                <ChevronsDown size={12} className="text-blue-400" />
-                <span>Развернуть все</span>
-              </button>
-              <div className="w-[1px] h-3 bg-[#1E2330]" />
-              <button
-                onClick={handleCollapseAll}
-                className="px-2 py-0.5 hover:bg-[#1E222D] text-slate-300 rounded text-[11px] flex items-center space-x-1 transition"
-                title="Свернуть все методы"
-              >
-                <ChevronsUp size={12} className="text-slate-400" />
-                <span>Свернуть все</span>
-              </button>
-            </div>
-
-            {/* Search Input */}
-            <div className="relative w-52">
-              <Search size={11} className="absolute left-2.5 top-1.5 text-slate-500" />
-              <input
-                type="text"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                placeholder="Поиск эндпоинта..."
-                className="w-full bg-[#0D0E14] border border-[#1E2330] rounded pl-7 pr-2.5 py-0.5 text-[11px] text-slate-200 focus:outline-none focus:border-blue-500 font-mono"
-              />
-            </div>
-
-            {/* OpenAPI Export */}
-            <button
-              onClick={exportOpenApi}
-              className="flex items-center space-x-1 px-2.5 py-1 bg-[#161922] hover:bg-[#1E222D] border border-[#1E2330] text-slate-300 rounded text-[11px] transition shrink-0"
-              title="Экспорт OpenAPI 3.0 спецификации в JSON"
-            >
-              <Download size={12} />
-              <span>OpenAPI JSON</span>
-            </button>
-          </div>
         </div>
 
-        {/* Selected Controller Filter Pill Bar (if filtered) */}
-        {selectedController !== 'ALL' && (
-          <div className="px-4 py-1.5 bg-[#111318] border-b border-[#1E2330] flex items-center justify-between text-xs font-mono shrink-0">
-            <div className="flex items-center space-x-2 text-blue-300">
-              <FolderKanban size={13} />
-              <span>Фильтр по контроллеру: <strong className="text-slate-200">{selectedController}</strong></span>
-              <span className="text-[10px] text-slate-400">({filteredEndpoints.length} методов)</span>
-            </div>
-            <button
-              onClick={() => setSelectedController('ALL')}
-              className="text-[10px] text-blue-400 hover:text-blue-200 underline"
-            >
-              Сбросить фильтр
-            </button>
-          </div>
-        )}
-
-        {/* ================= LIST OF SWAGGER METHOD ACCORDION SPOILERS ================= */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-2">
-          {filteredEndpoints.length > 0 ? (
-            filteredEndpoints.map(ep => {
-              const isExpanded = expandedEndpointIds.has(ep.id);
-              const theme = getMethodTheme(ep.method);
-              const displayPath = ep.fullPath || ep.path;
-              const handlerName = ep.handler || ep.operationId || 'handler';
-              const resolvedResponseDto = ep.responseDto || ep.responseBody?.modelName || 'ApiResponseDTO';
-
-              return (
-                <div
-                  key={ep.id}
-                  className={`rounded border transition-all duration-150 overflow-hidden ${
-                    isExpanded
-                      ? `${theme.activeBg} ring-1 ring-blue-500/40`
-                      : `bg-[#111318] ${theme.border}`
-                  }`}
-                >
-                  {/* Method Card Header */}
-                  <div
-                    onClick={() => toggleEndpointExpand(ep.id)}
-                    className={`p-2.5 cursor-pointer flex items-center justify-between gap-2.5 transition select-none ${theme.headerBg}`}
-                  >
-                    <div className="flex items-center space-x-2.5 min-w-0 truncate">
-                      <div className={`p-0.5 rounded transition-transform duration-150 shrink-0 ${isExpanded ? 'rotate-90 text-blue-400' : 'text-slate-500'}`}>
-                        <ChevronRight size={14} />
-                      </div>
-
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold font-mono border uppercase shrink-0 ${theme.badge}`}>
-                        {ep.method}
-                      </span>
-
-                      <span className="font-mono text-xs font-semibold text-slate-100 truncate">
-                        {displayPath}
-                      </span>
-
-                      <span className="px-1.5 py-0.2 rounded bg-[#090A0F] border border-[#1E2330] text-[10px] font-mono text-blue-400 shrink-0">
-                        {handlerName}()
-                      </span>
-
-                      {ep.description && (
-                        <span className="text-[11px] text-slate-400 truncate hidden lg:inline font-sans">
-                          — {ep.description}
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="flex items-center space-x-2 shrink-0">
-                      <span className="text-[10px] font-mono text-slate-300 bg-[#090A0F] px-1.5 py-0.5 rounded border border-[#1E2330]">
-                        {ep.controller}
-                      </span>
-
-                      {ep.requestParams && ep.requestParams.length > 0 && (
-                        <span className="text-[9px] font-mono text-slate-400 bg-[#090A0F] px-1.5 py-0.5 rounded border border-[#1E2330]">
-                          {ep.requestParams.length} param
-                        </span>
-                      )}
-
-                      <button
-                        onClick={e => {
-                          e.stopPropagation();
-                          handleCopy(displayPath, 'path', ep.id);
-                        }}
-                        className="p-1 hover:bg-[#1E222D] text-slate-400 hover:text-slate-200 rounded transition"
-                        title="Скопировать маршрут"
-                      >
-                        {copiedPathId === ep.id ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Expanded Spoiler Content */}
-                  {isExpanded && (
-                    <div className="p-4 border-t border-[#1E2330] bg-[#111318] space-y-4">
-                      {/* Description & Operation ID info */}
-                      <div className="p-2.5 bg-[#161922] rounded border border-[#1E2330] flex flex-wrap items-center justify-between gap-2 text-xs">
-                        <div className="flex items-center space-x-2">
-                          <Info size={13} className="text-blue-400 shrink-0" />
-                          <span className="text-slate-300 font-sans">{ep.description || 'Эндпоинт REST API контроллера'}</span>
-                        </div>
-                        <div className="flex items-center space-x-2 text-[10px] font-mono text-slate-400">
-                          <span>Базовый путь: <strong className="text-slate-200">{ep.controllerBasePath || '/'}</strong></span>
-                          <span>•</span>
-                          <span>Операция: <strong className="text-blue-400">{handlerName}</strong></span>
-                        </div>
-                      </div>
-
-                      {/* 2-Column Breakdown */}
-                      <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
-                        {/* Left Column */}
-                        <div className="space-y-3">
-                          {/* Parameters Table */}
-                          <div className="bg-[#161922] p-3.5 rounded border border-[#1E2330] space-y-2.5">
-                            <div className="flex items-center justify-between border-b border-[#1E2330] pb-2">
-                              <div className="flex items-center space-x-1.5 text-xs font-semibold text-slate-200 uppercase tracking-wide">
-                                <Filter size={13} className="text-blue-400" />
-                                <span>Параметры запроса (Path / Query / Header)</span>
-                              </div>
-                              <span className="text-[10px] font-mono text-slate-400 bg-[#090A0F] px-1.5 py-0.2 rounded border border-[#1E2330]">
-                                {ep.requestParams?.length || 0} параметров
-                              </span>
-                            </div>
-
-                            {ep.requestParams && ep.requestParams.length > 0 ? (
-                              <div className="overflow-x-auto">
-                                <table className="w-full text-left text-xs font-mono">
-                                  <thead className="bg-[#090A0F] text-slate-400 text-[10px] uppercase border-b border-[#1E2330]">
-                                    <tr>
-                                      <th className="p-2">Имя</th>
-                                      <th className="p-2">Тип</th>
-                                      <th className="p-2">Расположение</th>
-                                      <th className="p-2">Обязателен</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody className="divide-y divide-[#1E2330]">
-                                    {ep.requestParams.map((param, idx) => (
-                                      <tr key={idx} className="hover:bg-[#1E222D]/40">
-                                        <td className="p-2 font-semibold text-slate-200">{param.name}</td>
-                                        <td className="p-2 text-blue-300">{param.type}</td>
-                                        <td className="p-2">
-                                          <span className="px-1.5 py-0.2 rounded text-[10px] bg-[#090A0F] border border-[#1E2330] text-blue-300">
-                                            {param.in || 'query'}
-                                          </span>
-                                        </td>
-                                        <td className="p-2">
-                                          {param.required ? (
-                                            <span className="text-rose-400 font-bold text-[10px]">REQUIRED</span>
-                                          ) : (
-                                            <span className="text-slate-500 text-[10px]">optional</span>
-                                          )}
-                                        </td>
-                                      </tr>
-                                    ))}
-                                  </tbody>
-                                </table>
-                              </div>
-                            ) : (
-                              <div className="p-3 text-center text-slate-500 text-xs font-mono">
-                                У данного эндпоинта нет явных Path/Query параметров.
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Request Body DTO Block */}
-                          <div className="bg-[#161922] p-3.5 rounded border border-[#1E2330] space-y-2.5">
-                            <div className="flex items-center justify-between border-b border-[#1E2330] pb-2">
-                              <div className="flex items-center space-x-1.5 text-xs font-semibold text-slate-200 uppercase tracking-wide">
-                                <Braces size={13} className="text-emerald-400" />
-                                <span>Тело запроса (Request Body DTO)</span>
-                              </div>
-                              {(ep.requestBody?.exampleJson || ep.requestExample) && (
-                                <button
-                                  onClick={() => handleCopy(JSON.stringify(ep.requestBody?.exampleJson || JSON.parse(ep.requestExample || '{}'), null, 2), 'json', ep.id)}
-                                  className="flex items-center space-x-1 px-2 py-0.5 bg-[#090A0F] hover:bg-[#1E222D] text-slate-300 rounded text-[10px] border border-[#1E2330] transition"
-                                >
-                                  {copiedJsonId === ep.id ? <Check size={11} className="text-emerald-400" /> : <Copy size={11} />}
-                                  <span>{copiedJsonId === ep.id ? 'Скопировано' : 'Copy JSON'}</span>
-                                </button>
-                              )}
-                            </div>
-
-                            {ep.requestBody || ep.requestSchema || ep.requestExample ? (
-                              <div className="space-y-2.5 text-xs font-mono">
-                                <div className="p-2 bg-[#0D0E14] rounded border border-[#1E2330] flex items-center justify-between">
-                                  <span className="text-slate-400 text-[11px]">Модель запроса:</span>
-                                  <span className="text-emerald-400 font-bold text-xs bg-emerald-950/60 border border-emerald-900/60 px-2 py-0.5 rounded">
-                                    {ep.requestBody?.modelName || 'RequestDTO'}
-                                  </span>
-                                </div>
-
-                                {/* Table of Request Body Fields */}
-                                {ep.requestBody?.properties && ep.requestBody.properties.length > 0 && (
-                                  <div className="overflow-x-auto border border-[#1E2330] rounded bg-[#0D0E14]">
-                                    <table className="w-full text-left text-xs font-mono">
-                                      <thead className="bg-[#090A0F] text-slate-400 text-[10px] uppercase border-b border-[#1E2330]">
-                                        <tr>
-                                          <th className="p-1.5">Поле</th>
-                                          <th className="p-1.5">Тип</th>
-                                          <th className="p-1.5">Описание</th>
-                                          <th className="p-1.5">Обязательность</th>
-                                        </tr>
-                                      </thead>
-                                      <tbody className="divide-y divide-[#1E2330] text-[11px]">
-                                        {ep.requestBody.properties.map((prop, pIdx) => (
-                                          <tr key={pIdx} className="hover:bg-[#1E222D]/30">
-                                            <td className="p-1.5 font-semibold text-emerald-300">{prop.name}</td>
-                                            <td className="p-1.5 text-blue-300">{prop.type}</td>
-                                            <td className="p-1.5 text-slate-400">{prop.description || '—'}</td>
-                                            <td className="p-1.5">
-                                              {prop.required ? (
-                                                <span className="text-rose-400 text-[9px] font-bold">REQUIRED</span>
-                                              ) : (
-                                                <span className="text-slate-500 text-[9px]">optional</span>
-                                              )}
-                                            </td>
-                                          </tr>
-                                        ))}
-                                      </tbody>
-                                    </table>
-                                  </div>
-                                )}
-
-                                {/* Formatted JSON Sample */}
-                                <pre className="p-3 bg-[#0D0E14] rounded text-[11px] font-mono text-slate-300 border border-[#1E2330] overflow-x-auto max-h-[160px] leading-relaxed">
-                                  {JSON.stringify(ep.requestBody?.exampleJson || (ep.requestExample ? JSON.parse(ep.requestExample) : { [ep.requestBody?.modelName || 'request']: 'data' }), null, 2)}
-                                </pre>
-                              </div>
-                            ) : (
-                              <div className="p-3 text-center text-slate-500 text-xs font-mono">
-                                Тело запроса не требуется (GET / No Body).
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Right Column: Responses & Source Code */}
-                        <div className="space-y-3">
-                          {/* Response Codes and Models */}
-                          <div className="bg-[#161922] p-3.5 rounded border border-[#1E2330] space-y-2.5">
-                            <div className="flex items-center justify-between border-b border-[#1E2330] pb-2">
-                              <div className="flex items-center space-x-1.5 text-xs font-semibold text-slate-200 uppercase tracking-wide">
-                                <CheckCircle2 size={13} className="text-emerald-400" />
-                                <span>Схема ответов (Responses)</span>
-                              </div>
-                              <span className="text-[10px] font-mono text-slate-400 bg-[#090A0F] px-1.5 py-0.2 rounded border border-[#1E2330]">
-                                {ep.responses?.length || ep.responseStatuses?.length || 1} статусов
-                              </span>
-                            </div>
-
-                            {ep.responses && ep.responses.length > 0 ? (
-                              <div className="space-y-2">
-                                {ep.responses.map((resp, idx) => {
-                                  const respDtoName = resp.modelName || (resp.statusCode >= 200 && resp.statusCode < 300 ? resolvedResponseDto : undefined);
-
-                                  return (
-                                    <div key={idx} className="p-2.5 bg-[#0D0E14] rounded border border-[#1E2330] space-y-1.5">
-                                      <div className="flex items-center justify-between text-xs font-mono">
-                                        <div className="flex items-center space-x-2">
-                                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                                            resp.statusCode >= 200 && resp.statusCode < 300
-                                              ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-900/60'
-                                              : resp.statusCode >= 400 && resp.statusCode < 500
-                                              ? 'bg-amber-950/60 text-amber-400 border border-amber-900/60'
-                                              : 'bg-rose-950/60 text-rose-400 border border-rose-900/60'
-                                          }`}>
-                                            {resp.statusCode}
-                                          </span>
-                                          <span className="font-semibold text-slate-200">{resp.description}</span>
-                                        </div>
-
-                                        {respDtoName && (
-                                          <button
-                                            onClick={() => openResponseModal(ep, resp)}
-                                            className="px-2 py-0.5 rounded bg-[#161922] hover:bg-[#1E222D] border border-[#1E2330] text-blue-300 text-[10px] font-bold flex items-center space-x-1 transition shadow-sm group"
-                                            title="Кликните для просмотра детальной структуры DTO ответа"
-                                          >
-                                            <Braces size={11} className="text-blue-400 group-hover:rotate-12 transition-transform" />
-                                            <span className="underline underline-offset-2">{respDtoName}</span>
-                                          </button>
-                                        )}
-                                      </div>
-
-                                      {resp.exampleJson && (
-                                        <pre className="p-2 bg-[#111318] rounded text-[10px] font-mono text-slate-300 overflow-x-auto max-h-[100px] border border-[#1E2330]">
-                                          {JSON.stringify(resp.exampleJson, null, 2)}
-                                        </pre>
-                                      )}
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            ) : (
-                              <div className="p-3 bg-[#0D0E14] rounded border border-[#1E2330] space-y-2 text-xs font-mono">
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center space-x-2 text-emerald-400">
-                                    <span className="px-1.5 py-0.2 rounded bg-emerald-950/60 border border-emerald-900/60 font-bold text-[10px]">200 OK</span>
-                                    <span className="text-slate-300">Успешное выполнение</span>
-                                  </div>
-                                  
-                                  <button
-                                    onClick={() => openResponseModal(ep)}
-                                    className="px-2 py-0.5 rounded bg-[#161922] hover:bg-[#1E222D] border border-[#1E2330] text-blue-300 text-[10px] font-bold flex items-center space-x-1 transition shadow-sm group"
-                                    title="Кликните для просмотра детальной структуры DTO ответа"
-                                  >
-                                    <Braces size={11} className="text-blue-400 group-hover:rotate-12 transition-transform" />
-                                    <span className="underline underline-offset-2">{resolvedResponseDto}</span>
-                                  </button>
-                                </div>
-                                <div className="text-[11px] text-slate-500">
-                                  Возвращает DTO модель: <strong className="text-blue-300">{resolvedResponseDto}</strong>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Source Code Context */}
-                          <div
-                            onClick={() => onNavigateToSource?.(ep.sourceFile, ep.sourceLine)}
-                            className="bg-[#161922] p-3.5 rounded border border-[#1E2330] space-y-2.5 cursor-pointer hover:border-blue-500/80 transition group"
-                            title={`Перейти к исходному коду в дереве проекта (${ep.sourceFile}:${ep.sourceLine})`}
-                          >
-                            <div className="flex items-center justify-between border-b border-[#1E2330] pb-2">
-                              <div className="flex items-center space-x-1.5 text-xs font-semibold text-slate-200 uppercase tracking-wide group-hover:text-blue-300 transition">
-                                <FileCode size={13} className="text-blue-400 group-hover:scale-110 transition-transform" />
-                                <span>Исходный код метода</span>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <span className="text-[10px] font-mono text-slate-400 truncate max-w-[180px]">
-                                  {ep.sourceFile.split('/').pop()}:{ep.sourceLine}
-                                </span>
-                                <span className="flex items-center space-x-1 text-[10px] font-mono text-blue-400 bg-[#090A0F] px-2 py-0.5 rounded border border-[#1E2330] group-hover:bg-blue-600 group-hover:text-white transition">
-                                  <span>Дерево</span>
-                                  <ExternalLink size={10} />
-                                </span>
-                              </div>
-                            </div>
-
-                            <pre className="p-3 bg-[#0D0E14] rounded text-[11px] font-mono text-slate-300 border border-[#1E2330] overflow-x-auto max-h-[160px] leading-relaxed group-hover:border-blue-900 transition">
-                              {ep.codeSnippet || `// ${ep.sourceFile}:${ep.sourceLine}\n${ep.method} ${ep.fullPath || ep.path}\n${ep.handler || ep.operationId}()`}
-                            </pre>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })
-          ) : (
-            <div className="p-12 text-center text-slate-500 text-xs font-mono bg-[#111318] rounded border border-[#1E2330]">
-              Эндпоинты по выбранным фильтрам не найдены.
-            </div>
-          )}
+        {/* Action Controls */}
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={handleExportOpenApi}
+            className="flex items-center space-x-1.5 px-3 py-1.5 bg-[#161922] hover:bg-[#1E222D] border border-[#1E2330] rounded text-xs font-mono text-slate-300 transition"
+          >
+            <Download size={13} className="text-blue-400" />
+            <span>OpenAPI Spec</span>
+          </button>
         </div>
       </div>
 
-      {/* ================= RESPONSE DTO MODAL DIALOG ================= */}
-      {activeDtoModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div
-            className="w-full max-w-3xl max-h-[85vh] bg-[#111318] border border-[#1E2330] rounded shadow-2xl flex flex-col overflow-hidden"
-            onClick={e => e.stopPropagation()}
-          >
-            {/* Modal Header */}
-            <div className="p-4 border-b border-[#1E2330] bg-[#161922] flex items-center justify-between shrink-0">
-              <div className="flex items-center space-x-3 min-w-0">
-                <div className="p-2 rounded bg-[#090A0F] border border-[#1E2330] text-blue-400">
-                  <Braces size={16} />
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-[10px] uppercase font-mono tracking-wider text-slate-400 font-semibold">
-                      Структура DTO Ответа
-                    </span>
-                    <span className="px-1.5 py-0.2 rounded text-[10px] font-mono font-bold bg-emerald-950/60 text-emerald-400 border border-emerald-900/60">
-                      {activeDtoModal.statusCode || 200} OK
-                    </span>
-                    <span className="px-2 py-0.2 rounded text-[10px] font-mono bg-[#090A0F] text-slate-300 border border-[#1E2330]">
-                      {activeDtoModal.isPrimitive
-                        ? 'Скалярное значение (Scalar)'
-                        : activeDtoModal.isArray
-                        ? `Массив объектов (${activeDtoModal.itemType || 'Item'}[])`
-                        : 'Объектная модель (Object)'}
-                    </span>
-                  </div>
-                  <h3 className="text-sm font-semibold text-slate-100 font-mono truncate mt-0.5">
-                    {activeDtoModal.modelName || activeDtoModal.title}
-                  </h3>
-                </div>
-              </div>
-
-              <button
-                onClick={() => setActiveDtoModal(null)}
-                className="p-1.5 hover:bg-[#1E222D] text-slate-400 hover:text-white rounded transition"
-                title="Закрыть (Esc)"
-              >
-                <X size={16} />
-              </button>
-            </div>
-
-            {/* Modal Body */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 text-xs font-mono">
-              <div className="p-3 bg-[#161922] rounded border border-[#1E2330] flex items-start space-x-2.5 font-sans">
-                <Info size={15} className="text-blue-400 shrink-0 mt-0.5" />
-                <div className="text-slate-300 space-y-1 text-xs">
-                  <div>{activeDtoModal.description}</div>
-                  {activeDtoModal.isPrimitive && (
-                    <div className="text-blue-300 font-mono text-[11px]">
-                      Примечание: Эндпоинт возвращает единичное скалярное значение типа <strong className="text-blue-200">{activeDtoModal.itemType || activeDtoModal.modelName}</strong>.
-                    </div>
-                  )}
-                  {activeDtoModal.isArray && (
-                    <div className="text-blue-300 font-mono text-[11px]">
-                      Примечание: Возвращается коллекция элементов в формате массива JSON <strong className="text-blue-200">{activeDtoModal.itemType || 'Item'}[]</strong>.
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Table of Fields */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-slate-200 font-semibold uppercase text-[11px] tracking-wide">
-                  <div className="flex items-center space-x-1.5">
-                    <Layers3 size={13} className="text-blue-400" />
-                    <span>Поля и параметры схемы</span>
-                  </div>
-                  <span className="text-[10px] text-slate-400 font-mono">
-                    {activeDtoModal.properties?.length || 0} полей
-                  </span>
-                </div>
-
-                <div className="rounded border border-[#1E2330] bg-[#0D0E14] overflow-hidden">
-                  <table className="w-full text-left text-xs font-mono">
-                    <thead className="bg-[#090A0F] text-slate-400 text-[10px] uppercase border-b border-[#1E2330]">
-                      <tr>
-                        <th className="p-2">Параметр / Поле</th>
-                        <th className="p-2">Тип данных</th>
-                        <th className="p-2">Описание</th>
-                        <th className="p-2">Обязательность</th>
-                        <th className="p-2">Пример</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#1E2330] text-[11px]">
-                      {activeDtoModal.properties && activeDtoModal.properties.length > 0 ? (
-                        activeDtoModal.properties.map((prop, idx) => (
-                          <tr key={idx} className="hover:bg-[#1E222D]/40">
-                            <td className="p-2 font-semibold text-blue-300">{prop.name}</td>
-                            <td className="p-2 text-slate-300">{prop.type}</td>
-                            <td className="p-2 text-slate-400 font-sans">{prop.description || '—'}</td>
-                            <td className="p-2">
-                              {prop.required ? (
-                                <span className="text-rose-400 font-bold text-[9px] bg-rose-950/60 px-1.5 py-0.2 rounded border border-rose-900/60">
-                                  REQUIRED
-                                </span>
-                              ) : (
-                                <span className="text-slate-500 text-[9px]">optional</span>
-                              )}
-                            </td>
-                            <td className="p-2 text-emerald-400 truncate max-w-[150px]">
-                              {typeof prop.example === 'object' ? JSON.stringify(prop.example) : String(prop.example ?? '—')}
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan={5} className="p-4 text-center text-slate-500">
-                            Структура скалярного значения без дополнительных свойств
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* JSON Example */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-slate-200 font-semibold uppercase text-[11px] tracking-wide">
-                  <div className="flex items-center space-x-1.5">
-                    <Code2 size={13} className="text-emerald-400" />
-                    <span>Пример JSON payload ответа</span>
-                  </div>
-                  <button
-                    onClick={() => handleCopy(JSON.stringify(activeDtoModal.exampleJson || {}, null, 2), 'json', 'modal-json')}
-                    className="flex items-center space-x-1 px-2 py-0.5 bg-[#161922] hover:bg-[#1E222D] text-slate-300 rounded text-[10px] border border-[#1E2330] transition"
-                  >
-                    {copiedJsonId === 'modal-json' ? <Check size={11} className="text-emerald-400" /> : <Copy size={11} />}
-                    <span>{copiedJsonId === 'modal-json' ? 'Скопировано' : 'Copy JSON'}</span>
-                  </button>
-                </div>
-
-                <pre className="p-3 bg-[#0D0E14] rounded text-[11px] font-mono text-slate-300 border border-[#1E2330] overflow-x-auto max-h-[180px] leading-relaxed">
-                  {JSON.stringify(activeDtoModal.exampleJson || {}, null, 2)}
-                </pre>
-              </div>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="p-3 border-t border-[#1E2330] bg-[#161922] flex items-center justify-between shrink-0">
-              <span className="text-[11px] font-mono text-slate-500">
-                Модель данных извлечена из OpenAPI / AST контроллера
+      {/* 3-Column IDE Master-Detail Layout */}
+      <div className="flex-1 flex overflow-hidden min-h-0">
+        {/* Column 1: Controllers List (240px) */}
+        {isControllersOpen && (
+          <aside className="w-60 border-r border-[#1E2330] bg-[#111318] flex flex-col shrink-0 overflow-hidden">
+            <div className="p-2.5 border-b border-[#1E2330] flex items-center justify-between text-[11px] font-mono font-semibold text-slate-400">
+              <span className="flex items-center space-x-1.5">
+                <FolderKanban size={13} className="text-blue-400" />
+                <span>Контроллеры ({controllersWithCounts.length})</span>
               </span>
-              <button
-                onClick={() => setActiveDtoModal(null)}
-                className="px-3.5 py-1.5 bg-[#090A0F] hover:bg-[#1E222D] text-slate-200 rounded text-xs font-medium border border-[#1E2330] transition"
-              >
-                Закрыть
-              </button>
             </div>
+
+            <div className="flex-1 overflow-y-auto p-1.5 space-y-0.5">
+              <button
+                onClick={() => setSelectedController('ALL')}
+                className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded text-xs font-mono transition text-left ${
+                  selectedController === 'ALL'
+                    ? 'bg-blue-600/15 border border-blue-500/50 text-blue-300 font-medium'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-[#161922] border border-transparent'
+                }`}
+              >
+                <span className="truncate">Все контроллеры</span>
+                <span className="text-[10px] opacity-70">{endpoints.length}</span>
+              </button>
+
+              {controllersWithCounts.map(c => {
+                const isSelected = selectedController === c.name;
+                return (
+                  <button
+                    key={c.name}
+                    onClick={() => setSelectedController(c.name)}
+                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded text-xs font-mono transition text-left ${
+                      isSelected
+                        ? 'bg-blue-600/15 border border-blue-500/50 text-blue-300 font-medium'
+                        : 'text-slate-400 hover:text-slate-200 hover:bg-[#161922] border border-transparent'
+                    }`}
+                  >
+                    <span className="truncate" title={c.name}>{c.name}</span>
+                    <span className="text-[10px] opacity-70 ml-1.5 shrink-0 bg-[#0D0E14] px-1.5 py-0.2 rounded border border-[#1E2330]">
+                      {c.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </aside>
+        )}
+
+        {/* Column 2: Endpoints List (360px) */}
+        <section className="w-96 border-r border-[#1E2330] bg-[#0E1015] flex flex-col shrink-0 overflow-hidden">
+          <div className="p-2.5 border-b border-[#1E2330] bg-[#111318] flex items-center justify-between text-[11px] font-mono text-slate-400">
+            <span className="flex items-center space-x-1.5">
+              <Waypoints size={13} className="text-blue-400" />
+              <span>Эндпоинты ({filteredEndpoints.length})</span>
+            </span>
+            <span className="text-[10px] text-slate-500">
+              {selectedController !== 'ALL' ? selectedController : 'Все'}
+            </span>
           </div>
-        </div>
-      )}
+
+          <div className="flex-1 overflow-y-auto p-1.5 space-y-1">
+            {filteredEndpoints.length === 0 ? (
+              <div className="py-12 text-center text-xs text-slate-500 font-mono">
+                Эндпоинты не найдены
+              </div>
+            ) : (
+              filteredEndpoints.map(ep => {
+                const isSelected = selectedEndpoint?.id === ep.id;
+                const theme = getMethodTheme(ep.method);
+                return (
+                  <div
+                    key={ep.id}
+                    onClick={() => setSelectedEndpointId(ep.id)}
+                    className={`p-2.5 rounded cursor-pointer transition border text-xs font-mono ${
+                      isSelected
+                        ? theme.activeBg
+                        : 'bg-[#161922] border-[#1E2330] hover:border-[#2E3748] hover:bg-[#1E222D]'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-2 mb-1">
+                      <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold border uppercase shrink-0 ${theme.badge}`}>
+                        {ep.method}
+                      </span>
+                      <span className={`font-semibold truncate text-[11px] ${isSelected ? 'text-slate-100' : 'text-slate-300'}`}>
+                        {ep.path}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between text-[10px] text-slate-500 mt-1">
+                      <span className="truncate max-w-[200px]" title={ep.controller}>
+                        {ep.controller || 'DefaultController'}
+                      </span>
+                      {ep.responseDto && (
+                        <span className="text-emerald-400 bg-emerald-950/30 px-1.5 py-0.2 rounded border border-emerald-900/30 truncate max-w-[120px]">
+                          {ep.responseDto}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </section>
+
+        {/* Column 3: Permanent Endpoint Inspector (Flex-1) */}
+        <main className="flex-1 bg-[#090A0F] flex flex-col overflow-hidden min-w-0">
+          {selectedEndpoint ? (
+            <>
+              {/* Endpoint Header */}
+              <div className="p-4 border-b border-[#1E2330] bg-[#111318] flex items-start justify-between gap-3 shrink-0">
+                <div className="space-y-1.5 min-w-0">
+                  <div className="flex items-center space-x-2.5 flex-wrap gap-y-1">
+                    <span className={`px-2 py-0.5 rounded text-xs font-bold border uppercase font-mono ${getMethodTheme(selectedEndpoint.method).badge}`}>
+                      {selectedEndpoint.method}
+                    </span>
+                    <h3 className="text-sm font-semibold font-mono text-slate-100 truncate">
+                      {selectedEndpoint.path}
+                    </h3>
+                    <button
+                      onClick={() => handleCopyPath(selectedEndpoint.path)}
+                      className="p-1 rounded bg-[#161922] hover:bg-[#1E222D] border border-[#1E2330] text-slate-400 hover:text-slate-200 transition"
+                      title="Скопировать маршрут"
+                    >
+                      {copiedPath ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
+                    </button>
+                  </div>
+
+                  <p className="text-xs text-slate-400">
+                    {selectedEndpoint.description || selectedEndpoint.handler || 'REST API эндпоинт контроллера'}
+                  </p>
+
+                  <div className="flex items-center space-x-3 text-[11px] font-mono text-slate-500 pt-0.5">
+                    <span>Контроллер: <strong className="text-slate-300">{selectedEndpoint.controller || 'Default'}</strong></span>
+                    <span>•</span>
+                    <span>Обработчик: <strong className="text-slate-300">{selectedEndpoint.handler || 'anonymous'}</strong></span>
+                  </div>
+                </div>
+
+                {/* Direct Source Jump */}
+                {selectedEndpoint.sourceFile && onNavigateToSource && (
+                  <button
+                    onClick={() => onNavigateToSource(selectedEndpoint.sourceFile, selectedEndpoint.sourceLine || 1)}
+                    className="flex items-center space-x-1.5 px-3 py-1.5 bg-[#161922] hover:bg-[#1E222D] border border-[#1E2330] hover:border-blue-500/50 rounded text-xs text-blue-400 transition font-mono shrink-0"
+                  >
+                    <Code2 size={13} />
+                    <span>К коду ({selectedEndpoint.sourceLine || 1})</span>
+                  </button>
+                )}
+              </div>
+
+              {/* Inspector Subtabs Header */}
+              <div className="px-4 pt-2.5 border-b border-[#1E2330] bg-[#111318] flex items-center space-x-2 font-mono text-xs shrink-0">
+                <button
+                  onClick={() => setActiveInspectorTab('spec')}
+                  className={`pb-2 px-2 border-b-2 transition flex items-center space-x-1.5 ${
+                    activeInspectorTab === 'spec'
+                      ? 'border-blue-500 text-blue-400 font-medium'
+                      : 'border-transparent text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  <FileText size={13} />
+                  <span>Спецификация & Request Body</span>
+                </button>
+
+                <button
+                  onClick={() => setActiveInspectorTab('dto')}
+                  className={`pb-2 px-2 border-b-2 transition flex items-center space-x-1.5 ${
+                    activeInspectorTab === 'dto'
+                      ? 'border-blue-500 text-blue-400 font-medium'
+                      : 'border-transparent text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  <Database size={13} />
+                  <span>Response DTO & Схемы</span>
+                  {selectedEndpoint.responseDto && (
+                    <span className="text-[9px] bg-blue-950 text-blue-300 px-1 py-0.2 rounded border border-blue-900">
+                      {selectedEndpoint.responseDto}
+                    </span>
+                  )}
+                </button>
+
+                <button
+                  onClick={() => setActiveInspectorTab('code')}
+                  className={`pb-2 px-2 border-b-2 transition flex items-center space-x-1.5 ${
+                    activeInspectorTab === 'code'
+                      ? 'border-blue-500 text-blue-400 font-medium'
+                      : 'border-transparent text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  <FileCode size={13} />
+                  <span>Обработчик & AST</span>
+                </button>
+              </div>
+
+              {/* Inspector Tab Content */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                {/* Tab 1: Spec & Request Body */}
+                {activeInspectorTab === 'spec' && (
+                  <div className="space-y-4">
+                    {/* Parameters Table */}
+                    <div className="bg-[#111318] border border-[#1E2330] rounded p-3.5 space-y-2.5">
+                      <div className="flex items-center justify-between border-b border-[#1E2330] pb-2">
+                        <span className="text-xs font-semibold font-mono text-slate-200 flex items-center space-x-1.5">
+                          <Tag size={13} className="text-blue-400" />
+                          <span>Параметры запроса ({selectedEndpoint.requestParams?.length || 0})</span>
+                        </span>
+                      </div>
+
+                      {!selectedEndpoint.requestParams || selectedEndpoint.requestParams.length === 0 ? (
+                        <div className="text-xs text-slate-500 font-mono py-2">
+                          У метода нет параметров URL / Query
+                        </div>
+                      ) : (
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left text-xs font-mono">
+                            <thead>
+                              <tr className="border-b border-[#1E2330] text-[10px] text-slate-500 uppercase">
+                                <th className="pb-1.5">Имя</th>
+                                <th className="pb-1.5">Тип</th>
+                                <th className="pb-1.5">In</th>
+                                <th className="pb-1.5">Обязательный</th>
+                                <th className="pb-1.5">Описание</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-[#1E2330]">
+                              {selectedEndpoint.requestParams.map((p: ApiParam, idx: number) => (
+                                <tr key={idx} className="hover:bg-[#161922]/50">
+                                  <td className="py-2 text-blue-300 font-semibold">{p.name}</td>
+                                  <td className="py-2 text-slate-400">{p.type || 'string'}</td>
+                                  <td className="py-2">
+                                    <span className="px-1.5 py-0.2 rounded text-[9px] bg-[#090A0F] border border-[#1E2330] text-slate-300">
+                                      {p.in}
+                                    </span>
+                                  </td>
+                                  <td className="py-2">
+                                    {p.required ? (
+                                      <span className="text-red-400 text-[10px]">Да</span>
+                                    ) : (
+                                      <span className="text-slate-500 text-[10px]">Нет</span>
+                                    )}
+                                  </td>
+                                  <td className="py-2 text-slate-400">{p.description || '—'}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Request Body Specification */}
+                    {selectedEndpoint.requestBody && (
+                      <div className="bg-[#111318] border border-[#1E2330] rounded p-3.5 space-y-2.5">
+                        <div className="flex items-center justify-between border-b border-[#1E2330] pb-2">
+                          <span className="text-xs font-semibold font-mono text-slate-200 flex items-center space-x-1.5">
+                            <Braces size={13} className="text-emerald-400" />
+                            <span>Тело запроса (Request Body): {selectedEndpoint.requestBody.modelName || 'Payload'}</span>
+                          </span>
+                          <button
+                            onClick={() => handleCopyJson(selectedEndpoint.requestBody?.exampleJson || selectedEndpoint.requestBody)}
+                            className="text-xs text-blue-400 hover:text-blue-300 flex items-center space-x-1 font-mono"
+                          >
+                            <Copy size={12} />
+                            <span>JSON</span>
+                          </button>
+                        </div>
+
+                        {selectedEndpoint.requestBody.properties && selectedEndpoint.requestBody.properties.length > 0 && (
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-left text-xs font-mono">
+                              <thead>
+                                <tr className="border-b border-[#1E2330] text-[10px] text-slate-500 uppercase">
+                                  <th className="pb-1.5">Поле</th>
+                                  <th className="pb-1.5">Тип</th>
+                                  <th className="pb-1.5">Обязательное</th>
+                                  <th className="pb-1.5">Описание</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-[#1E2330]">
+                                {selectedEndpoint.requestBody.properties.map((prop: DtoProperty, idx: number) => (
+                                  <tr key={idx} className="hover:bg-[#161922]/50">
+                                    <td className="py-2 text-emerald-300 font-semibold">{prop.name}</td>
+                                    <td className="py-2 text-slate-400">{prop.type}</td>
+                                    <td className="py-2">
+                                      {prop.required ? (
+                                        <span className="text-red-400 text-[10px]">Да</span>
+                                      ) : (
+                                        <span className="text-slate-500 text-[10px]">Нет</span>
+                                      )}
+                                    </td>
+                                    <td className="py-2 text-slate-400">{prop.description || '—'}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
+
+                        {selectedEndpoint.requestBody.exampleJson && (
+                          <div className="pt-2 border-t border-[#1E2330]">
+                            <div className="text-[10px] text-slate-500 font-mono mb-1">Пример полезной нагрузки:</div>
+                            <pre className="p-2.5 rounded bg-[#0D0E14] border border-[#1E2330] text-xs font-mono text-emerald-300 overflow-x-auto">
+                              {JSON.stringify(selectedEndpoint.requestBody.exampleJson, null, 2)}
+                            </pre>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Tab 2: Response DTO & Schemas */}
+                {activeInspectorTab === 'dto' && (
+                  <div className="space-y-4">
+                    <div className="bg-[#111318] border border-[#1E2330] rounded p-3.5 space-y-2.5">
+                      <div className="flex items-center justify-between border-b border-[#1E2330] pb-2">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-xs font-semibold font-mono text-slate-200">
+                            Спецификация ответа (200 OK)
+                          </span>
+                          {selectedEndpoint.responseDto && (
+                            <span className="text-xs font-mono font-bold text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-900/40">
+                              {selectedEndpoint.responseDto}
+                            </span>
+                          )}
+                        </div>
+                        {selectedEndpoint.responseBody?.properties && (
+                          <button
+                            onClick={() => handleCopyJson(selectedEndpoint.responseBody?.properties)}
+                            className="text-xs text-blue-400 hover:text-blue-300 flex items-center space-x-1 font-mono"
+                          >
+                            <Copy size={12} />
+                            <span>JSON DTO</span>
+                          </button>
+                        )}
+                      </div>
+
+                      {selectedEndpoint.responseBody?.properties && selectedEndpoint.responseBody.properties.length > 0 ? (
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left text-xs font-mono">
+                            <thead>
+                              <tr className="border-b border-[#1E2330] text-[10px] text-slate-500 uppercase">
+                                <th className="pb-1.5">Поле DTO</th>
+                                <th className="pb-1.5">Тип данных</th>
+                                <th className="pb-1.5">Обязательное</th>
+                                <th className="pb-1.5">Описание</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-[#1E2330]">
+                              {selectedEndpoint.responseBody.properties.map((p: DtoProperty, idx: number) => (
+                                <tr key={idx} className="hover:bg-[#161922]/50">
+                                  <td className="py-2 text-blue-300 font-semibold">{p.name}</td>
+                                  <td className="py-2 text-slate-400">{p.type}</td>
+                                  <td className="py-2">
+                                    {p.required ? (
+                                      <span className="text-red-400 text-[10px]">Да</span>
+                                    ) : (
+                                      <span className="text-slate-500 text-[10px]">Нет</span>
+                                    )}
+                                  </td>
+                                  <td className="py-2 text-slate-400">{p.description || '—'}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      ) : (
+                        <div className="p-3 bg-[#0D0E14] border border-[#1E2330] rounded text-xs font-mono text-slate-400">
+                          {selectedEndpoint.responseDto
+                            ? `Модель ответа: ${selectedEndpoint.responseDto}`
+                            : 'Возвращается стандартный JSON или примитивный тип'}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Tab 3: Code & AST */}
+                {activeInspectorTab === 'code' && (
+                  <div className="space-y-4">
+                    <div className="bg-[#111318] border border-[#1E2330] rounded p-3.5 space-y-3 font-mono">
+                      <div className="flex items-center justify-between border-b border-[#1E2330] pb-2">
+                        <span className="text-xs font-semibold text-slate-200">
+                          Файл контроллера & Метод
+                        </span>
+                        {selectedEndpoint.sourceFile && onNavigateToSource && (
+                          <button
+                            onClick={() => onNavigateToSource(selectedEndpoint.sourceFile, selectedEndpoint.sourceLine || 1)}
+                            className="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-medium transition flex items-center space-x-1"
+                          >
+                            <span>Открыть в редакторе</span>
+                            <ExternalLink size={12} />
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="space-y-2 text-xs">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-slate-500 w-28">Путь к файлу:</span>
+                          <span className="text-slate-200 bg-[#0D0E14] px-2 py-0.5 rounded border border-[#1E2330] truncate">
+                            {selectedEndpoint.sourceFile || 'src/controllers/' + (selectedEndpoint.controller || 'index') + '.ts'}
+                          </span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-slate-500 w-28">Строка кода:</span>
+                          <span className="text-blue-400 bg-[#0D0E14] px-2 py-0.5 rounded border border-[#1E2330]">
+                            {selectedEndpoint.sourceLine || 1}
+                          </span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-slate-500 w-28">Сигнатура:</span>
+                          <span className="text-slate-300 bg-[#0D0E14] px-2 py-0.5 rounded border border-[#1E2330]">
+                            {selectedEndpoint.handler || 'actionHandler'}()
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
+              <Waypoints size={32} className="text-slate-600 mb-2" />
+              <div className="text-xs text-slate-400 font-mono">Выберите эндпоинт из списка для инспекции</div>
+            </div>
+          )}
+        </main>
+      </div>
     </div>
   );
 };
-
