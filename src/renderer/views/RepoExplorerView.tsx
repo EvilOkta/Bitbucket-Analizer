@@ -307,40 +307,40 @@ export const RepoExplorerView: React.FC<RepoExplorerViewProps> = ({
   const targetLine = highlightLine || focusedSource?.line;
 
   return (
-    <div className="flex h-full w-full overflow-hidden bg-[#0B0F19]">
+    <div className="flex h-full w-full overflow-hidden bg-[#090A0F] text-[#F1F5F9] select-none">
       {/* Left Tree Explorer */}
-      <div className="w-80 lg:w-96 shrink-0 border-r border-gray-800 flex flex-col h-full bg-gray-950/60">
-        <div className="p-3 border-b border-gray-800 flex items-center justify-between gap-2">
+      <div className="w-80 lg:w-96 shrink-0 border-r border-[#1E2330] flex flex-col h-full bg-[#111318]">
+        <div className="p-3 border-b border-[#1E2330] flex items-center justify-between gap-2">
           <div className="relative flex-1">
-            <Search size={13} className="absolute left-2.5 top-2.5 text-gray-500" />
+            <Search size={13} className="absolute left-2.5 top-2.5 text-slate-500" />
             <input
               type="text"
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Поиск по файлам..."
-              className="w-full bg-gray-900 border border-gray-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-blue-500 font-mono"
+              className="w-full bg-[#0D0E14] border border-[#1E2330] rounded pl-8 pr-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-mono"
             />
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto py-1.5">
+        <div className="flex-1 overflow-y-auto py-1">
           {renderTree(tree)}
         </div>
       </div>
 
       {/* Right Node Details & Code Viewer */}
-      <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#070A13]">
+      <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#090A0F]">
         {selectedNode ? (
           <div className="flex flex-col h-full overflow-hidden">
             {/* Header with File Info and Back to API Button */}
-            <div className="p-3.5 border-b border-gray-800 bg-gray-950/80 flex items-center justify-between gap-3 shrink-0">
+            <div className="p-3.5 border-b border-[#1E2330] bg-[#111318] flex items-center justify-between gap-3 shrink-0">
               <div className="flex items-center space-x-3 min-w-0">
-                <div className={`p-2 rounded-lg ${selectedNode.type === 'file' ? 'bg-blue-950/80 text-blue-400 border border-blue-800/60' : 'bg-amber-950/80 text-amber-400 border border-amber-800/60'}`}>
-                  {selectedNode.type === 'file' ? <FileCode size={18} /> : <Folder size={18} />}
+                <div className={`p-2 rounded ${selectedNode.type === 'file' ? 'bg-[#161922] text-blue-400 border border-[#1E2330]' : 'bg-[#161922] text-amber-400 border border-[#1E2330]'}`}>
+                  {selectedNode.type === 'file' ? <FileCode size={16} /> : <Folder size={16} />}
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center space-x-2">
-                    <span className="text-[10px] uppercase font-mono tracking-wider text-gray-400">
+                    <span className="text-[10px] uppercase font-mono tracking-wider text-slate-400">
                       {selectedNode.type === 'file' ? 'Исходный код файла' : 'Каталог'}
                     </span>
                     {selectedNode.category && (
@@ -349,12 +349,12 @@ export const RepoExplorerView: React.FC<RepoExplorerViewProps> = ({
                       </span>
                     )}
                     {targetLine && (
-                      <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-yellow-950/80 text-yellow-300 border border-yellow-700/60 animate-pulse">
+                      <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-amber-950/60 text-amber-300 border border-amber-800/60 animate-pulse">
                         Строка {targetLine}
                       </span>
                     )}
                   </div>
-                  <h3 className="text-sm font-bold text-gray-100 font-mono truncate" title={selectedNode.path}>
+                  <h3 className="text-xs font-semibold text-slate-100 font-mono truncate" title={selectedNode.path}>
                     {selectedNode.path || '/'}
                   </h3>
                 </div>
@@ -365,21 +365,21 @@ export const RepoExplorerView: React.FC<RepoExplorerViewProps> = ({
                 {selectedNode.content && (
                   <button
                     onClick={() => handleCopyCode(selectedNode.content || '')}
-                    className="flex items-center space-x-1.5 px-2.5 py-1.5 bg-gray-900 hover:bg-gray-800 text-gray-300 rounded-lg text-xs border border-gray-800 transition"
+                    className="flex items-center space-x-1.5 px-2.5 py-1.5 bg-[#161922] hover:bg-[#1E222D] text-slate-300 rounded text-xs border border-[#1E2330] transition"
                     title="Скопировать весь исходный код"
                   >
                     {copiedCode ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
-                    <span>{copiedCode ? 'Скопировано' : 'Копировать код'}</span>
+                    <span>{copiedCode ? 'Скопировано' : 'Копировать'}</span>
                   </button>
                 )}
 
                 {(onBackToPrevious || onBackToApi) && (
                   <button
                     onClick={onBackToPrevious || onBackToApi}
-                    className="flex items-center space-x-1.5 px-3.5 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-lg text-xs font-semibold shadow-lg shadow-purple-600/30 transition transform active:scale-95"
+                    className="flex items-center space-x-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-medium transition"
                     title={focusedSource?.returnLabel || backLabel || 'Вернуться назад'}
                   >
-                    <ArrowLeft size={14} />
+                    <ArrowLeft size={13} />
                     <span>{focusedSource?.returnLabel || backLabel || 'Назад'}</span>
                   </button>
                 )}
@@ -387,18 +387,18 @@ export const RepoExplorerView: React.FC<RepoExplorerViewProps> = ({
             </div>
 
             {/* Quick Metadata Bar */}
-            <div className="px-4 py-2 bg-gray-950/40 border-b border-gray-800/80 flex items-center space-x-4 text-[11px] font-mono text-gray-400 shrink-0">
-              <div>Язык: <span className="text-gray-200">{selectedNode.language || 'Plain Text'}</span></div>
+            <div className="px-4 py-2 bg-[#111318] border-b border-[#1E2330] flex items-center space-x-4 text-[11px] font-mono text-slate-400 shrink-0">
+              <div>Язык: <span className="text-slate-200">{selectedNode.language || 'Plain Text'}</span></div>
               <div>•</div>
-              <div>Размер: <span className="text-gray-200">{(selectedNode.sizeBytes / 1024).toFixed(2)} KB</span></div>
+              <div>Размер: <span className="text-slate-200">{(selectedNode.sizeBytes / 1024).toFixed(2)} KB</span></div>
               <div>•</div>
-              <div>Строк: <span className="text-gray-200">{fileLines.length || selectedNode.linesCount || '—'}</span></div>
+              <div>Строк: <span className="text-slate-200">{fileLines.length || selectedNode.linesCount || '—'}</span></div>
             </div>
 
             {/* Code Content View */}
             <div className="flex-1 overflow-y-auto p-4">
               {selectedNode.content ? (
-                <div className="rounded-xl border border-gray-800 bg-gray-950/90 overflow-hidden shadow-inner">
+                <div className="rounded border border-[#1E2330] bg-[#0D0E14] overflow-hidden">
                   <div className="overflow-x-auto">
                     <table className="w-full text-left font-mono text-xs border-collapse">
                       <tbody>
@@ -412,16 +412,16 @@ export const RepoExplorerView: React.FC<RepoExplorerViewProps> = ({
                               ref={isFocused ? codeLineRef : undefined}
                               className={`transition-colors ${
                                 isFocused
-                                  ? 'bg-yellow-500/20 border-l-4 border-yellow-400 text-yellow-100 font-bold'
-                                  : 'hover:bg-gray-900/50 text-gray-300'
+                                  ? 'bg-amber-500/15 border-l-2 border-amber-400 text-amber-100 font-bold'
+                                  : 'hover:bg-[#161922]/50 text-slate-300'
                               }`}
                             >
-                              <td className={`py-0.5 px-3 text-right select-none w-12 border-r border-gray-800/80 ${
-                                isFocused ? 'text-yellow-400 font-bold bg-yellow-950/40' : 'text-gray-600 bg-gray-950/50'
+                              <td className={`py-0.5 px-3 text-right select-none w-12 border-r border-[#1E2330] ${
+                                isFocused ? 'text-amber-400 font-bold bg-amber-950/30' : 'text-slate-600 bg-[#0E1015]'
                               }`}>
                                 {lineNum}
                               </td>
-                              <td className="py-0.5 px-4 whitespace-pre font-mono leading-relaxed">
+                              <td className="py-0.5 px-4 whitespace-pre font-mono leading-relaxed text-[11.5px]">
                                 {line || ' '}
                               </td>
                             </tr>
@@ -432,18 +432,18 @@ export const RepoExplorerView: React.FC<RepoExplorerViewProps> = ({
                   </div>
                 </div>
               ) : selectedNode.type === 'directory' ? (
-                <div className="p-8 text-center text-gray-500 text-xs font-mono glass-panel rounded-xl border border-gray-800">
-                  Выбран каталог <strong className="text-gray-300">{selectedNode.name}</strong>. Выберите файл внутри для просмотра кода.
+                <div className="p-8 text-center text-slate-500 text-xs font-mono bg-[#111318] rounded border border-[#1E2330]">
+                  Выбран каталог <strong className="text-slate-300">{selectedNode.name}</strong>. Выберите файл внутри для просмотра кода.
                 </div>
               ) : (
-                <div className="p-8 text-center text-gray-500 text-xs font-mono glass-panel rounded-xl border border-gray-800">
+                <div className="p-8 text-center text-slate-500 text-xs font-mono bg-[#111318] rounded border border-[#1E2330]">
                   Содержимое файла не предзагружено (бинарный или пустой файл).
                 </div>
               )}
             </div>
           </div>
         ) : (
-          <div className="text-center text-gray-500 text-xs m-auto">
+          <div className="text-center text-slate-500 text-xs m-auto font-mono">
             Выберите узел в дереве для просмотра детальной информации и исходного кода
           </div>
         )}

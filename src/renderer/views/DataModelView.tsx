@@ -827,42 +827,42 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
   const SelectedIcon = selectedBadge.icon;
 
   return (
-    <div className={`p-4 space-y-3.5 overflow-hidden h-full max-w-7xl mx-auto flex flex-col ${isFullScreen ? 'fixed inset-0 z-50 bg-[#0B0F19] p-4 max-w-none' : ''}`}>
+    <div className={`p-4 space-y-3 overflow-hidden h-full max-w-7xl mx-auto flex flex-col bg-[#090A0F] text-[#F1F5F9] select-none ${isFullScreen ? 'fixed inset-0 z-50 bg-[#090A0F] p-4 max-w-none' : ''}`}>
       {/* Top Header & Mode Selectors */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-gray-900/70 p-3.5 rounded-xl border border-gray-800/80 backdrop-blur-md shrink-0">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-[#111318] p-3.5 rounded border border-[#1E2330] shrink-0">
         <div className="flex items-center space-x-3">
-          <div className="p-2.5 bg-amber-500/10 border border-amber-500/30 rounded-lg text-amber-400">
-            <Database size={20} />
+          <div className="p-2.5 bg-[#161922] border border-[#1E2330] rounded text-blue-400">
+            <Database size={18} />
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <h2 className="text-sm font-bold text-gray-100">
+              <h2 className="text-sm font-semibold text-slate-100">
                 Модель данных & ER-Диаграмма
               </h2>
               {useSampleModel && (
-                <span className="px-2 py-0.5 text-[10px] bg-amber-950/70 text-amber-300 border border-amber-800/40 rounded-full font-medium flex items-center space-x-1">
+                <span className="px-2 py-0.5 text-[10px] bg-amber-950/60 text-amber-300 border border-amber-800/40 rounded font-medium flex items-center space-x-1">
                   <Sparkles size={10} />
                   <span>Демо-модель</span>
                 </span>
               )}
             </div>
-            <p className="text-[11px] text-gray-400 mt-0.5">
+            <p className="text-[11px] text-slate-400 mt-0.5 font-mono">
               Таблицы, структуры объектов, ENUM перечисления, системные типы и внешние связи
             </p>
           </div>
         </div>
 
-        <div className="flex items-center space-x-2.5">
-          {/* Model Source Toggle (Repo vs Test Model) */}
+        <div className="flex items-center space-x-2">
+          {/* Model Source Toggle */}
           {hasRepoEntities && (
-            <div className="flex items-center space-x-1 bg-gray-950 p-1 rounded-lg border border-gray-800 text-xs">
+            <div className="flex items-center space-x-1 bg-[#161922] p-0.5 rounded border border-[#1E2330] text-xs">
               <button
                 onClick={() => {
                   setUseSampleModel(false);
                   setSelectedEntityId(dataModel?.entities?.[0]?.id || '');
                 }}
-                className={`px-2.5 py-1 rounded-md font-medium transition ${
-                  !useSampleModel ? 'bg-amber-600 text-white shadow-sm' : 'text-gray-400 hover:text-gray-200'
+                className={`px-2.5 py-1 rounded text-xs font-medium transition ${
+                  !useSampleModel ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-200'
                 }`}
                 title="Показать модель данных из репозитория"
               >
@@ -873,8 +873,8 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
                   setUseSampleModel(true);
                   setSelectedEntityId('roles');
                 }}
-                className={`px-2.5 py-1 rounded-md font-medium transition flex items-center space-x-1 ${
-                  useSampleModel ? 'bg-amber-600 text-white shadow-sm' : 'text-gray-400 hover:text-gray-200'
+                className={`px-2.5 py-1 rounded text-xs font-medium transition flex items-center space-x-1 ${
+                  useSampleModel ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-200'
                 }`}
                 title="Переключить на демонстрационную модель"
               >
@@ -884,12 +884,12 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
             </div>
           )}
 
-          {/* Primary View Toggle: Таблица (Table Composition) vs Визуализация (ERD Diagram) */}
-          <div className="flex items-center bg-gray-950 p-1 rounded-lg border border-gray-800 text-xs">
+          {/* Primary View Toggle: Таблица vs Визуализация */}
+          <div className="flex items-center bg-[#161922] p-0.5 rounded border border-[#1E2330] text-xs">
             <button
               onClick={() => setMainMode('table')}
-              className={`px-3 py-1 rounded-md font-semibold transition flex items-center space-x-1.5 ${
-                mainMode === 'table' ? 'bg-amber-600 text-white shadow-sm' : 'text-gray-400 hover:text-gray-200'
+              className={`px-3 py-1 rounded text-xs font-medium transition flex items-center space-x-1.5 ${
+                mainMode === 'table' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-200'
               }`}
               title="Показать подробный состав и свойства выбранной сущности"
             >
@@ -903,8 +903,8 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
                   setTimeout(() => focusOnNode(selectedEntity.name), 100);
                 }
               }}
-              className={`px-3 py-1 rounded-md font-semibold transition flex items-center space-x-1.5 ${
-                mainMode === 'visualization' ? 'bg-amber-600 text-white shadow-sm' : 'text-gray-400 hover:text-gray-200'
+              className={`px-3 py-1 rounded text-xs font-medium transition flex items-center space-x-1.5 ${
+                mainMode === 'visualization' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-200'
               }`}
               title="Сфокусироваться на таблице в визуализации ERD"
             >
@@ -916,10 +916,10 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
           {/* Fullscreen Toggle */}
           <button
             onClick={() => setIsFullScreen(!isFullScreen)}
-            className="p-1.5 bg-gray-900 hover:bg-gray-800 text-gray-300 rounded-lg border border-gray-800 transition"
+            className="p-1.5 bg-[#161922] hover:bg-[#1E222D] text-slate-300 rounded border border-[#1E2330] transition"
             title={isFullScreen ? 'Свернуть' : 'Развернуть во весь экран'}
           >
-            {isFullScreen ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
+            {isFullScreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
           </button>
         </div>
       </div>
@@ -928,24 +928,24 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
       <div className="flex-1 flex overflow-hidden gap-3 min-h-0">
         {/* Left Entity Frame (Collapsible) */}
         <div
-          className={`glass-panel rounded-xl border border-gray-800/80 transition-all duration-300 flex flex-col shrink-0 ${
-            isSidebarCollapsed ? 'w-14 items-center p-2' : 'w-72 md:w-80 p-3.5'
+          className={`bg-[#111318] rounded border border-[#1E2330] transition-all duration-200 flex flex-col shrink-0 ${
+            isSidebarCollapsed ? 'w-12 items-center p-2' : 'w-72 md:w-80 p-3'
           }`}
         >
           {/* Sidebar Header with Collapse Toggle */}
-          <div className="flex items-center justify-between pb-2 border-b border-gray-800/60 w-full">
+          <div className="flex items-center justify-between pb-2 border-b border-[#1E2330] w-full">
             {!isSidebarCollapsed && (
-              <div className="text-xs font-bold text-gray-200 flex items-center space-x-1.5 truncate">
-                <Table size={13} className="text-amber-400 shrink-0" />
+              <div className="text-xs font-semibold text-slate-200 flex items-center space-x-1.5 truncate">
+                <Table size={13} className="text-blue-400 shrink-0" />
                 <span>Таблицы модели ({activeModel.entities.length})</span>
               </div>
             )}
             <button
               onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-              className="p-1 hover:bg-gray-800 text-gray-400 hover:text-gray-200 rounded border border-gray-800/60 transition shrink-0 mx-auto"
+              className="p-1 hover:bg-[#1E222D] text-slate-400 hover:text-slate-200 rounded border border-[#1E2330] transition shrink-0 mx-auto"
               title={isSidebarCollapsed ? 'Развернуть список таблиц' : 'Свернуть панель таблиц'}
             >
-              {isSidebarCollapsed ? <PanelLeftOpen size={15} /> : <PanelLeftClose size={15} />}
+              {isSidebarCollapsed ? <PanelLeftOpen size={14} /> : <PanelLeftClose size={14} />}
             </button>
           </div>
 
@@ -954,22 +954,22 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
             <div className="flex flex-col flex-1 overflow-hidden space-y-2 pt-2">
               {/* Search */}
               <div className="relative">
-                <Search size={11} className="absolute left-2.5 top-2 text-gray-500" />
+                <Search size={11} className="absolute left-2.5 top-2 text-slate-500" />
                 <input
                   type="text"
                   value={tableSearch}
                   onChange={e => setTableSearch(e.target.value)}
                   placeholder="Поиск таблицы, ENUM или поля..."
-                  className="w-full bg-gray-900 border border-gray-800 rounded-lg pl-7 pr-2 py-1 text-xs text-gray-200 focus:outline-none focus:border-amber-500 font-mono"
+                  className="w-full bg-[#0D0E14] border border-[#1E2330] rounded pl-7 pr-2 py-1 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-mono"
                 />
               </div>
 
               {/* Filter Tabs */}
-              <div className="flex items-center space-x-1 overflow-x-auto pb-1 text-[10px]">
+              <div className="flex items-center space-x-1 overflow-x-auto pb-1 text-[10px] font-mono">
                 <button
                   onClick={() => setSourceFilter('all')}
                   className={`px-2 py-0.5 rounded border transition shrink-0 ${
-                    sourceFilter === 'all' ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' : 'bg-gray-900/60 text-gray-400 border-gray-800 hover:text-gray-200'
+                    sourceFilter === 'all' ? 'bg-blue-600/15 text-blue-300 border-blue-500/40' : 'bg-[#161922] text-slate-400 border-[#1E2330] hover:text-slate-200'
                   }`}
                 >
                   Все ({activeModel.entities.length})
@@ -977,7 +977,7 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
                 <button
                   onClick={() => setSourceFilter('table')}
                   className={`px-2 py-0.5 rounded border transition shrink-0 flex items-center space-x-1 ${
-                    sourceFilter === 'table' ? 'bg-blue-500/20 text-blue-300 border-blue-500/40' : 'bg-gray-900/60 text-gray-400 border-gray-800 hover:text-gray-200'
+                    sourceFilter === 'table' ? 'bg-blue-600/15 text-blue-300 border-blue-500/40' : 'bg-[#161922] text-slate-400 border-[#1E2330] hover:text-slate-200'
                   }`}
                 >
                   <Table size={9} />
@@ -986,7 +986,7 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
                 <button
                   onClick={() => setSourceFilter('enum')}
                   className={`px-2 py-0.5 rounded border transition shrink-0 flex items-center space-x-1 ${
-                    sourceFilter === 'enum' ? 'bg-teal-500/20 text-teal-300 border-teal-500/40' : 'bg-gray-900/60 text-gray-400 border-gray-800 hover:text-gray-200'
+                    sourceFilter === 'enum' ? 'bg-teal-500/15 text-teal-300 border-teal-500/40' : 'bg-[#161922] text-slate-400 border-[#1E2330] hover:text-slate-200'
                   }`}
                 >
                   <ListFilter size={9} />
@@ -995,7 +995,7 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
                 <button
                   onClick={() => setSourceFilter('system_type')}
                   className={`px-2 py-0.5 rounded border transition shrink-0 flex items-center space-x-1 ${
-                    sourceFilter === 'system_type' ? 'bg-slate-500/20 text-slate-300 border-slate-500/40' : 'bg-gray-900/60 text-gray-400 border-gray-800 hover:text-gray-200'
+                    sourceFilter === 'system_type' ? 'bg-slate-500/15 text-slate-300 border-slate-500/40' : 'bg-[#161922] text-slate-400 border-[#1E2330] hover:text-slate-200'
                   }`}
                 >
                   <Server size={9} />
@@ -1019,10 +1019,10 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
                           focusOnNode(ent.name);
                         }
                       }}
-                      className={`p-2 rounded-lg cursor-pointer text-xs transition flex flex-col space-y-1 group ${
+                      className={`p-2 rounded cursor-pointer text-xs transition flex flex-col space-y-1 group ${
                         isSelected
-                          ? 'bg-amber-950/50 text-amber-300 border border-amber-600/60 font-bold shadow-sm'
-                          : 'bg-gray-900/60 hover:bg-gray-900 text-gray-300 border border-gray-800/50'
+                          ? 'bg-blue-600/15 text-blue-200 border border-blue-500/70 font-semibold'
+                          : 'bg-[#161922] hover:bg-[#1E222D] text-slate-300 border border-[#1E2330]'
                       }`}
                     >
                       <div className="flex items-center justify-between">
@@ -1030,7 +1030,7 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
                           {ent.isEnum ? (
                             <Tag size={11} className={isSelected ? 'text-teal-300' : 'text-teal-400'} />
                           ) : (
-                            <Table size={11} className={isSelected ? 'text-amber-300' : 'text-gray-400'} />
+                            <Table size={11} className={isSelected ? 'text-blue-300' : 'text-slate-400'} />
                           )}
                           <span>{ent.name}</span>
                         </div>
@@ -1041,13 +1041,13 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
                                 e.stopPropagation();
                                 onNavigateToSource?.(ent.sourceFile!, ent.sourceLine || 1);
                               }}
-                              className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-cyan-950 text-cyan-400 rounded border border-cyan-800/40 transition"
+                              className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-[#111318] text-blue-400 rounded border border-[#1E2330] transition"
                               title={`Перейти к коду: ${ent.sourceFile}:${ent.sourceLine || 1}`}
                             >
                               <ExternalLink size={10} />
                             </button>
                           )}
-                          <span className="text-[10px] text-gray-500 font-mono">
+                          <span className="text-[10px] text-slate-500 font-mono">
                             {ent.isEnum ? `${ent.enumValues?.length || 0} знач.` : `${ent.attributes?.length || 0} пол.`}
                           </span>
                         </div>
@@ -1060,7 +1060,7 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
                           <span className="truncate max-w-[150px]">{badge.label}</span>
                         </span>
                         {ent.domain && (
-                          <span className="text-[9px] text-gray-500 font-sans truncate max-w-[80px]">{ent.domain}</span>
+                          <span className="text-[9px] text-slate-500 font-mono truncate max-w-[80px]">{ent.domain}</span>
                         )}
                       </div>
                     </div>
@@ -1070,7 +1070,7 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
             </div>
           ) : (
             /* Collapsed mini-sidebar icons list */
-            <div className="flex flex-col space-y-2 pt-2 overflow-y-auto flex-1 w-full items-center">
+            <div className="flex flex-col space-y-1.5 pt-2 overflow-y-auto flex-1 w-full items-center">
               {filteredEntityList.map(ent => {
                 const isSelected = ent.id === selectedEntity?.id;
                 const badge = getSourceBadge(ent);
@@ -1084,12 +1084,12 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
                         focusOnNode(ent.name);
                       }
                     }}
-                    className={`p-2 rounded-lg transition text-center ${
-                      isSelected ? 'bg-amber-600 text-white shadow-md' : 'bg-gray-900/80 hover:bg-gray-800 text-gray-400'
+                    className={`p-2 rounded transition text-center ${
+                      isSelected ? 'bg-blue-600 text-white shadow' : 'bg-[#161922] hover:bg-[#1E222D] text-slate-400 border border-[#1E2330]'
                     }`}
                     title={`${ent.name} (${badge.label})`}
                   >
-                    <BadgeIcon size={14} />
+                    <BadgeIcon size={13} />
                   </button>
                 );
               })}
@@ -1103,12 +1103,12 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
           {/* MODE 1: TABLE VIEW (Selected entity composition / ENUM)   */}
           {/* ========================================================= */}
           {mainMode === 'table' && (
-            <div className="glass-panel p-4 rounded-xl border border-gray-800/80 h-full flex flex-col space-y-3 overflow-hidden">
+            <div className="bg-[#111318] p-4 rounded border border-[#1E2330] h-full flex flex-col space-y-3 overflow-hidden">
               {/* Header Info */}
-              <div className="flex items-start justify-between border-b border-gray-800 pb-3 shrink-0">
+              <div className="flex items-start justify-between border-b border-[#1E2330] pb-3 shrink-0">
                 <div className="space-y-1">
                   <div className="flex items-center space-x-2">
-                    <span className="text-[10px] font-mono text-amber-400 uppercase tracking-wide">
+                    <span className="text-[10px] font-mono text-blue-400 uppercase tracking-wide">
                       {selectedEntity?.isEnum ? 'Ключ ENUM перечисления' : 'Выбранная таблица'}
                     </span>
                     <span className={`px-2 py-0.5 text-[10px] rounded font-medium border inline-flex items-center space-x-1 ${selectedBadge.bg}`}>
@@ -1118,15 +1118,15 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
                   </div>
 
                   <div className="flex items-center space-x-2.5">
-                    <h3 className="text-lg font-bold text-gray-100 font-mono">{selectedEntity?.name || 'Таблица не выбрана'}</h3>
+                    <h3 className="text-base font-semibold text-slate-100 font-mono">{selectedEntity?.name || 'Таблица не выбрана'}</h3>
                     {selectedEntity?.sourceFile && (
                       <button
                         onClick={() => onNavigateToSource?.(selectedEntity.sourceFile!, selectedEntity.sourceLine || 1)}
-                        className="px-2.5 py-0.5 bg-cyan-950/70 hover:bg-cyan-900/80 text-cyan-300 hover:text-cyan-100 border border-cyan-800/50 rounded text-[11px] font-mono flex items-center space-x-1.5 transition group shadow-sm"
+                        className="px-2.5 py-0.5 bg-[#161922] hover:bg-[#1E222D] text-blue-300 hover:text-blue-100 border border-[#1E2330] rounded text-[11px] font-mono flex items-center space-x-1.5 transition group"
                         title={`Открыть ${selectedEntity.name} в файле ${selectedEntity.sourceFile}:${selectedEntity.sourceLine || 1}`}
                       >
-                        <FileCode size={12} className="text-cyan-400" />
-                        <span className="underline decoration-cyan-500/50 truncate max-w-[250px]">
+                        <FileCode size={12} className="text-blue-400" />
+                        <span className="underline decoration-blue-500/50 truncate max-w-[250px]">
                           {selectedEntity.sourceFile.split(/[/\\]/).pop()}:{selectedEntity.sourceLine || 1}
                         </span>
                         <ExternalLink size={10} className="shrink-0 group-hover:scale-110 transition-transform" />
@@ -1135,7 +1135,7 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
                   </div>
 
                   {selectedEntity?.description && (
-                    <p className="text-xs text-gray-400">{selectedEntity.description}</p>
+                    <p className="text-xs text-slate-400">{selectedEntity.description}</p>
                   )}
                 </div>
 
@@ -1145,13 +1145,13 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
                       setMainMode('visualization');
                       setTimeout(() => focusOnNode(selectedEntity.name), 100);
                     }}
-                    className="px-2.5 py-1 bg-amber-950/60 hover:bg-amber-900/60 text-amber-300 border border-amber-800/50 rounded text-xs flex items-center space-x-1.5 transition"
+                    className="px-2.5 py-1 bg-[#161922] hover:bg-[#1E222D] text-slate-300 border border-[#1E2330] rounded text-xs flex items-center space-x-1.5 transition font-mono"
                     title="Сфокусироваться на этой таблице в визуализации графа"
                   >
                     <Eye size={12} />
                     <span>В визуализацию</span>
                   </button>
-                  <span className="text-xs font-mono text-gray-300 bg-gray-900 px-2.5 py-1 rounded border border-gray-800">
+                  <span className="text-xs font-mono text-slate-300 bg-[#090A0F] px-2.5 py-1 rounded border border-[#1E2330]">
                     {selectedEntity?.isEnum ? `${selectedEntity.enumValues?.length || 0} значений` : `${selectedEntity?.attributes?.length || 0} колонок`}
                   </span>
                 </div>
@@ -1159,9 +1159,9 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
 
               {/* VIEW A: IF SELECTED ENTITY IS ENUM */}
               {selectedEntity?.isEnum ? (
-                <div className="flex-1 overflow-y-auto space-y-4 pr-1">
+                <div className="flex-1 overflow-y-auto space-y-3 pr-1">
                   {/* ENUM Values Card List */}
-                  <div className="p-4 bg-teal-950/30 border border-teal-800/40 rounded-xl space-y-3">
+                  <div className="p-3 bg-[#161922] border border-[#1E2330] rounded space-y-2.5">
                     <div className="flex items-center justify-between">
                       <div className="text-xs font-semibold text-teal-300 flex items-center space-x-1.5">
                         <Tag size={13} />
@@ -1171,27 +1171,27 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
                     </div>
 
                     {/* Quick Badges Preview */}
-                    <div className="flex flex-wrap gap-2 pt-1">
+                    <div className="flex flex-wrap gap-1.5 pt-1">
                       {(selectedEntity.enumValues || []).map((val, idx) => (
                         <div
                           key={idx}
-                          className="px-3 py-1.5 bg-teal-900/40 hover:bg-teal-900/60 border border-teal-700/50 rounded-lg text-xs font-mono text-teal-200 flex items-center space-x-2 transition"
+                          className="px-2.5 py-1 bg-[#0D0E14] border border-[#1E2330] rounded text-xs font-mono text-teal-200 flex items-center space-x-1.5 transition"
                         >
-                          <span className="text-teal-400 text-[10px] font-sans font-bold">#{idx + 1}</span>
+                          <span className="text-teal-400 text-[10px] font-mono font-bold">#{idx + 1}</span>
                           <span className="font-semibold">{val}</span>
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  {/* Clean Values Specification Table (Without fake PK/VARCHAR) */}
-                  <div className="rounded-xl border border-gray-800 overflow-hidden">
-                    <div className="bg-gray-950/80 px-3.5 py-2 border-b border-gray-800 text-xs font-semibold text-gray-300 flex items-center space-x-2">
+                  {/* Clean Values Specification Table */}
+                  <div className="rounded border border-[#1E2330] overflow-hidden bg-[#0D0E14]">
+                    <div className="bg-[#161922] px-3.5 py-2 border-b border-[#1E2330] text-xs font-semibold text-slate-300 flex items-center space-x-2">
                       <ListFilter size={13} className="text-teal-400" />
                       <span>Спецификация значений</span>
                     </div>
                     <table className="w-full text-left text-xs font-mono">
-                      <thead className="bg-gray-950 text-gray-400 text-[10px] uppercase border-b border-gray-800">
+                      <thead className="bg-[#090A0F] text-slate-400 text-[10px] uppercase border-b border-[#1E2330]">
                         <tr>
                           <th className="p-2.5 w-12 text-center">№</th>
                           <th className="p-2.5">Значение / Литерал перечисления</th>
@@ -1199,14 +1199,14 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
                           <th className="p-2.5 w-28 text-center">Статус</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-gray-800/60">
+                      <tbody className="divide-y divide-[#1E2330]">
                         {(selectedEntity.enumValues || []).map((val, idx) => (
-                          <tr key={idx} className="hover:bg-gray-900/40 transition">
-                            <td className="p-2.5 text-center text-gray-500 font-sans">{idx + 1}</td>
+                          <tr key={idx} className="hover:bg-[#161922]/40 transition">
+                            <td className="p-2.5 text-center text-slate-500 font-mono">{idx + 1}</td>
                             <td className="p-2.5 font-bold text-teal-300">
                               <span className="bg-teal-950/60 px-2 py-0.5 rounded border border-teal-800/40">{val}</span>
                             </td>
-                            <td className="p-2.5 text-gray-300 font-sans text-xs">
+                            <td className="p-2.5 text-slate-300 font-sans text-xs">
                               {selectedEntity.description && selectedEntity.description.includes(val) ? (
                                 <span>Элемент {val}</span>
                               ) : (
@@ -1225,10 +1225,10 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
                     </table>
                   </div>
 
-                  {/* Incoming References (Who uses this ENUM) */}
+                  {/* Incoming References */}
                   {incomingReferences.length > 0 && (
-                    <div className="p-3.5 bg-gray-900/50 border border-gray-800 rounded-xl space-y-2">
-                      <div className="text-xs font-semibold text-gray-300 flex items-center space-x-1.5">
+                    <div className="p-3 bg-[#161922] border border-[#1E2330] rounded space-y-2">
+                      <div className="text-xs font-semibold text-slate-300 flex items-center space-x-1.5">
                         <Link2 size={13} className="text-blue-400" />
                         <span>Используется в сущностях ({incomingReferences.length}):</span>
                       </div>
@@ -1237,14 +1237,14 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
                           <div
                             key={i}
                             onClick={() => setSelectedEntityId(ref.sourceEntity.id)}
-                            className="p-2 bg-gray-950/70 hover:bg-gray-950 border border-gray-800 rounded-lg cursor-pointer transition flex items-center justify-between group"
+                            className="p-2 bg-[#0D0E14] hover:bg-[#161922] border border-[#1E2330] rounded cursor-pointer transition flex items-center justify-between group"
                           >
                             <div className="flex items-center space-x-2 font-mono text-xs">
-                              <Table size={12} className="text-amber-400" />
-                              <span className="text-gray-200 group-hover:text-amber-300 font-semibold">{ref.sourceEntity.name}</span>
-                              <span className="text-gray-500 font-sans">({ref.attributeName})</span>
+                              <Table size={12} className="text-blue-400" />
+                              <span className="text-slate-200 group-hover:text-blue-300 font-semibold">{ref.sourceEntity.name}</span>
+                              <span className="text-slate-500 font-sans">({ref.attributeName})</span>
                             </div>
-                            <span className="text-[10px] text-cyan-400 group-hover:underline flex items-center space-x-1">
+                            <span className="text-[10px] text-blue-400 group-hover:underline flex items-center space-x-1 font-mono">
                               <span>Перейти</span>
                               <ArrowRight size={10} />
                             </span>
@@ -1257,9 +1257,9 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
               ) : (
                 /* VIEW B: IF SELECTED ENTITY IS STANDARD TABLE / STRUCTURE */
                 <div className="flex-1 overflow-y-auto space-y-3 pr-1">
-                  <div className="rounded-xl border border-gray-800 overflow-hidden">
+                  <div className="rounded border border-[#1E2330] overflow-hidden bg-[#0D0E14]">
                     <table className="w-full text-left text-xs font-mono">
-                      <thead className="bg-gray-950 text-gray-400 text-[10px] uppercase border-b border-gray-800 sticky top-0 z-10">
+                      <thead className="bg-[#090A0F] text-slate-400 text-[10px] uppercase border-b border-[#1E2330] sticky top-0 z-10">
                         <tr>
                           <th className="p-2.5">Колонка / Свойство</th>
                           <th className="p-2.5">Тип данных</th>
@@ -1268,7 +1268,7 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
                           <th className="p-2.5">Nullable</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-gray-800/60">
+                      <tbody className="divide-y divide-[#1E2330]">
                         {(selectedEntity?.attributes || []).map((attr, i) => {
                           const fkTarget = attr.foreignKeyTarget || (activeModel.relationships || []).find(r => 
                             r.sourceEntityName?.toLowerCase() === selectedEntity?.name?.toLowerCase() &&
@@ -1281,25 +1281,25 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
                           const attrLine = attr.sourceLine || selectedEntity?.sourceLine || 1;
 
                           return (
-                            <tr key={i} className="hover:bg-gray-900/40 transition">
+                            <tr key={i} className="hover:bg-[#161922]/40 transition">
                               <td 
                                 onClick={() => {
                                   if (attrFile) onNavigateToSource?.(attrFile, attrLine);
                                 }}
                                 className={`p-2.5 font-semibold flex items-center space-x-1.5 truncate ${
-                                  attrFile ? 'text-gray-200 hover:text-cyan-300 cursor-pointer group' : 'text-gray-200'
+                                  attrFile ? 'text-slate-200 hover:text-blue-300 cursor-pointer group' : 'text-slate-200'
                                 }`}
                                 title={attrFile ? `Перейти к ${attr.name} в ${attrFile}:${attrLine}` : undefined}
                               >
                                 {attr.isPrimaryKey && <Key size={11} className="text-amber-400 shrink-0" />}
                                 {attr.isEnum && <ListFilter size={11} className="text-teal-400 shrink-0" />}
                                 {attr.isForeignKey && !attr.isEnum && <Link2 size={11} className="text-blue-400 shrink-0" />}
-                                <span className={attrFile ? 'group-hover:underline decoration-cyan-500/50' : ''}>{attr.name}</span>
+                                <span className={attrFile ? 'group-hover:underline decoration-blue-500/50' : ''}>{attr.name}</span>
                                 {attrFile && (
-                                  <ExternalLink size={9} className="text-cyan-400/50 group-hover:text-cyan-300 opacity-0 group-hover:opacity-100 transition shrink-0 ml-0.5" />
+                                  <ExternalLink size={9} className="text-blue-400/50 group-hover:text-blue-300 opacity-0 group-hover:opacity-100 transition shrink-0 ml-0.5" />
                                 )}
                               </td>
-                              <td className="p-2.5 text-purple-300">
+                              <td className="p-2.5 text-blue-300">
                                 <span className="font-mono">{attr.type}</span>
                                 {attr.isForeignKey && fkTarget && (
                                   <span 
@@ -1309,11 +1309,11 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
                                         setSelectedEntityId(targetEntity.id);
                                       }
                                     }}
-                                    className="ml-2 text-[10px] text-cyan-300 hover:text-cyan-100 cursor-pointer font-mono bg-cyan-950/50 hover:bg-cyan-900/60 px-1.5 py-0.5 rounded border border-cyan-800/40 inline-flex items-center space-x-1 transition" 
+                                    className="ml-2 text-[10px] text-blue-300 hover:text-blue-100 cursor-pointer font-mono bg-blue-950/50 hover:bg-blue-900/60 px-1.5 py-0.5 rounded border border-blue-800/40 inline-flex items-center space-x-1 transition" 
                                     title={`Внешний ключ ссылается на таблицу ${fkTarget} (кликните для перехода)`}
                                   >
-                                    <span className="text-cyan-500">→</span>
-                                    <span className="font-semibold underline decoration-cyan-500/50">{fkTarget}</span>
+                                    <span className="text-blue-500">→</span>
+                                    <span className="font-semibold underline decoration-blue-500/50">{fkTarget}</span>
                                   </span>
                                 )}
                               </td>
@@ -1333,7 +1333,7 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
                                             setSelectedEntityId(targetEntity.id);
                                           }
                                         }}
-                                        className="text-[9px] text-cyan-400 hover:text-cyan-200 hover:underline cursor-pointer font-mono bg-cyan-950/40 px-1 py-0.2 rounded border border-cyan-800/30"
+                                        className="text-[9px] text-blue-400 hover:text-blue-200 hover:underline cursor-pointer font-mono bg-blue-950/40 px-1 py-0.2 rounded border border-blue-800/30"
                                         title={`Перейти к таблице ${fkTarget}`}
                                       >
                                         {fkTarget.replace(/\.id$/, '')}
@@ -1341,18 +1341,18 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
                                     )}
                                   </div>
                                 ) : (
-                                  <span className="text-gray-600">—</span>
+                                  <span className="text-slate-600">—</span>
                                 )}
                               </td>
-                              <td className="p-2.5 text-gray-400 font-sans text-xs max-w-[240px] truncate" title={attr.description || ''}>
+                              <td className="p-2.5 text-slate-400 font-sans text-xs max-w-[240px] truncate" title={attr.description || ''}>
                                 {attr.description ? (
-                                  <span className="text-gray-300">{attr.description}</span>
+                                  <span className="text-slate-300">{attr.description}</span>
                                 ) : (
-                                  <span className="text-gray-600">—</span>
+                                  <span className="text-slate-600">—</span>
                                 )}
                               </td>
-                              <td className="p-2.5 text-gray-400">
-                                {attr.isNullable ? <span className="text-emerald-400 font-sans text-[10px]">NULL</span> : <span className="text-gray-500 font-sans text-[10px]">NOT NULL</span>}
+                              <td className="p-2.5 text-slate-400 font-mono">
+                                {attr.isNullable ? <span className="text-emerald-400 text-[10px]">NULL</span> : <span className="text-slate-500 text-[10px]">NOT NULL</span>}
                               </td>
                             </tr>
                           );
@@ -1369,15 +1369,15 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
           {/* MODE 2: VISUALIZATION VIEW (D3 Graph / Mermaid Focus)     */}
           {/* ========================================================= */}
           {mainMode === 'visualization' && (
-            <div className="glass-panel rounded-xl border border-gray-800/80 h-full flex flex-col overflow-hidden relative">
+            <div className="bg-[#111318] rounded border border-[#1E2330] h-full flex flex-col overflow-hidden relative">
               {/* Controls Bar */}
-              <div className="bg-gray-950/80 p-2.5 border-b border-gray-800 flex items-center justify-between shrink-0 backdrop-blur-md">
+              <div className="bg-[#161922] p-2 border-b border-[#1E2330] flex items-center justify-between shrink-0">
                 <div className="flex items-center space-x-2">
-                  <div className="flex items-center space-x-1 bg-gray-900 p-1 rounded-lg border border-gray-800 text-xs">
+                  <div className="flex items-center space-x-1 bg-[#090A0F] p-0.5 rounded border border-[#1E2330] text-xs">
                     <button
                       onClick={() => setVisualType('d3')}
-                      className={`px-2.5 py-1 rounded font-medium transition flex items-center space-x-1 ${
-                        visualType === 'd3' ? 'bg-amber-600 text-white' : 'text-gray-400 hover:text-gray-200'
+                      className={`px-2.5 py-1 rounded text-xs font-medium transition flex items-center space-x-1 ${
+                        visualType === 'd3' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-200'
                       }`}
                     >
                       <Layers size={12} />
@@ -1385,8 +1385,8 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
                     </button>
                     <button
                       onClick={() => setVisualType('mermaid')}
-                      className={`px-2.5 py-1 rounded font-medium transition flex items-center space-x-1 ${
-                        visualType === 'mermaid' ? 'bg-amber-600 text-white' : 'text-gray-400 hover:text-gray-200'
+                      className={`px-2.5 py-1 rounded text-xs font-medium transition flex items-center space-x-1 ${
+                        visualType === 'mermaid' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-200'
                       }`}
                     >
                       <Eye size={12} />
@@ -1395,11 +1395,11 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
                   </div>
 
                   {visualType === 'd3' && (
-                    <div className="flex items-center space-x-1 text-xs">
+                    <div className="flex items-center space-x-1 text-xs font-mono">
                       <button
                         onClick={() => setViewMode('all')}
                         className={`px-2.5 py-1 rounded text-[11px] font-medium transition ${
-                          viewMode === 'all' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'text-gray-400 hover:text-gray-200'
+                          viewMode === 'all' ? 'bg-blue-600/15 text-blue-300 border border-blue-500/40' : 'text-slate-400 hover:text-slate-200'
                         }`}
                       >
                         Все ({activeModel.entities.length})
@@ -1407,10 +1407,10 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
                       <button
                         onClick={() => setViewMode('neighborhood')}
                         className={`px-2.5 py-1 rounded text-[11px] font-medium transition ${
-                          viewMode === 'neighborhood' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'text-gray-400 hover:text-gray-200'
+                          viewMode === 'neighborhood' ? 'bg-blue-600/15 text-blue-300 border border-blue-500/40' : 'text-slate-400 hover:text-slate-200'
                         }`}
                       >
-                        Окружение ({selectedEntity.name})
+                        Окружение ({selectedEntity?.name})
                       </button>
                     </div>
                   )}
@@ -1418,13 +1418,13 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
 
                 {visualType === 'd3' && (
                   <div className="flex items-center space-x-1">
-                    <button onClick={() => handleZoom(1.3)} className="p-1.5 bg-gray-900 hover:bg-gray-800 text-gray-300 rounded border border-gray-800" title="Приблизить">
+                    <button onClick={() => handleZoom(1.3)} className="p-1.5 bg-[#090A0F] hover:bg-[#1E222D] text-slate-300 rounded border border-[#1E2330]" title="Приблизить">
                       <ZoomIn size={13} />
                     </button>
-                    <button onClick={() => handleZoom(0.7)} className="p-1.5 bg-gray-900 hover:bg-gray-800 text-gray-300 rounded border border-gray-800" title="Отдалить">
+                    <button onClick={() => handleZoom(0.7)} className="p-1.5 bg-[#090A0F] hover:bg-[#1E222D] text-slate-300 rounded border border-[#1E2330]" title="Отдалить">
                       <ZoomOut size={13} />
                     </button>
-                    <button onClick={handleResetZoom} className="p-1.5 bg-gray-900 hover:bg-gray-800 text-gray-300 rounded border border-gray-800" title="По центру">
+                    <button onClick={handleResetZoom} className="p-1.5 bg-[#090A0F] hover:bg-[#1E222D] text-slate-300 rounded border border-[#1E2330]" title="По центру">
                       <Maximize2 size={13} />
                     </button>
                   </div>
@@ -1432,32 +1432,32 @@ export const DataModelView: React.FC<DataModelViewProps> = ({ dataModel, onNavig
               </div>
 
               {/* Visual Display Content */}
-              <div className="flex-1 w-full bg-[#070A13] relative overflow-hidden">
+              <div className="flex-1 w-full bg-[#090A0F] relative overflow-hidden">
                 {visualType === 'd3' ? (
                   <>
                     <svg ref={svgRef} className="w-full h-full block cursor-grab active:cursor-grabbing" />
                     {/* Floating Selected Node Quick Info Overlay */}
                     {selectedEntity && (
-                      <div className="absolute bottom-3 left-3 bg-gray-950/90 border border-gray-800/90 p-2.5 rounded-xl shadow-xl backdrop-blur-md flex items-center space-x-3 text-xs max-w-md">
-                        <div className="p-2 bg-amber-500/10 rounded-lg text-amber-400 border border-amber-500/30">
-                          {selectedEntity.isEnum ? <Tag size={16} /> : <Table size={16} />}
+                      <div className="absolute bottom-3 left-3 bg-[#111318] border border-[#1E2330] p-2.5 rounded shadow-xl flex items-center space-x-3 text-xs max-w-md">
+                        <div className="p-2 bg-[#161922] rounded text-blue-400 border border-[#1E2330]">
+                          {selectedEntity.isEnum ? <Tag size={15} /> : <Table size={15} />}
                         </div>
                         <div className="min-w-0">
                           <div className="flex items-center space-x-2">
-                            <span className="font-mono font-bold text-gray-100 truncate">{selectedEntity.name}</span>
+                            <span className="font-mono font-semibold text-slate-100 truncate">{selectedEntity.name}</span>
                             <span className={`px-1.5 py-0.2 text-[9px] rounded border ${selectedBadge.bg}`}>
                               {selectedBadge.label}
                             </span>
                           </div>
-                          <p className="text-[11px] text-gray-400 truncate">
-                            {selectedEntity.isEnum ? `${selectedEntity.enumValues?.length || 0} допустимых значений` : `${selectedEntity.attributes?.length || 0} колонок`}
+                          <p className="text-[11px] text-slate-400 truncate font-mono">
+                            {selectedEntity.isEnum ? `${selectedEntity.enumValues?.length || 0} значений` : `${selectedEntity.attributes?.length || 0} колонок`}
                           </p>
                         </div>
                         <button
                           onClick={() => setMainMode('table')}
-                          className="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded-lg font-medium text-[11px] shrink-0 transition"
+                          className="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded font-medium text-[11px] shrink-0 transition"
                         >
-                          Состав таблицы
+                          Состав
                         </button>
                       </div>
                     )}

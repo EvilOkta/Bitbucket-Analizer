@@ -921,28 +921,28 @@ ${selectedFlow.sequenceDiagramPlantUml || selectedFlow.sequenceDiagramMermaid ||
         )}
 
         {/* ================= CENTER MAIN AREA: FULL-HEIGHT SEQUENCE DIAGRAM VISUALIZER ================= */}
-        <div className="flex-1 flex flex-col h-full overflow-hidden p-3.5 space-y-2 bg-[#070A13] min-w-0">
+        <div className="flex-1 flex flex-col h-full overflow-hidden p-3 space-y-2 bg-[#090A0F] min-w-0">
           {activeMode === 'forms' && selectedElement ? (
             <>
               {/* Selected Element Header Bar */}
-              <div className="glass-panel p-2 px-3 rounded-xl border border-gray-800 flex flex-wrap items-center justify-between gap-2 shrink-0 select-none">
+              <div className="bg-[#111318] p-2 px-3 rounded border border-[#1E2330] flex flex-wrap items-center justify-between gap-2 shrink-0 select-none">
                 <div className="flex items-center space-x-2.5 min-w-0">
                   <span className="text-xs font-semibold font-mono text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800/60 shrink-0">
                     {selectedForm?.name}
                   </span>
 
-                  <span className="text-xs font-bold text-gray-100 font-mono truncate">
+                  <span className="text-xs font-bold text-slate-100 font-mono truncate">
                     {selectedElement.name}
                   </span>
                 </div>
 
-                <div className="flex items-center space-x-3 text-xs font-mono text-gray-400 shrink-0">
-                  <span>Маршрут: <strong className="text-gray-200">{selectedForm?.route}</strong></span>
+                <div className="flex items-center space-x-3 text-xs font-mono text-slate-400 shrink-0">
+                  <span>Маршрут: <strong className="text-slate-200">{selectedForm?.route}</strong></span>
 
                   {/* Show Structure Button */}
                   <button
                     onClick={() => setIsStructureModalOpen(true)}
-                    className="flex items-center space-x-1.5 px-3 py-1 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-700/70 text-emerald-300 rounded-lg text-xs font-semibold transition shadow-sm group"
+                    className="flex items-center space-x-1.5 px-2.5 py-1 bg-[#161922] hover:bg-[#1E222D] border border-[#1E2330] text-emerald-300 rounded text-xs font-semibold transition group"
                     title="Открыть интерактивную D3 структуру экранной формы"
                   >
                     <Layers3 size={13} className="text-emerald-400 group-hover:scale-110 transition-transform" />
@@ -964,14 +964,14 @@ ${selectedFlow.sequenceDiagramPlantUml || selectedFlow.sequenceDiagramMermaid ||
           ) : activeMode === 'backend' && selectedFlow ? (
             <>
               {/* Backend Flow Header */}
-              <div className="glass-panel p-2.5 px-3.5 rounded-xl border border-gray-800 flex flex-wrap items-center justify-between gap-2 shrink-0 select-none">
+              <div className="bg-[#111318] p-2.5 px-3.5 rounded border border-[#1E2330] flex flex-wrap items-center justify-between gap-2 shrink-0 select-none">
                 <div className="flex items-center space-x-2 min-w-0">
-                  <h3 className="text-xs font-bold text-gray-100 font-mono truncate">{selectedFlow.name}</h3>
+                  <h3 className="text-xs font-bold text-slate-100 font-mono truncate">{selectedFlow.name}</h3>
                   <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/70 px-2 py-0.5 rounded border border-emerald-800/50 shrink-0">
                     {Math.round((selectedFlow.confidence || 1) * 100)}% Confidence
                   </span>
                 </div>
-                <p className="text-[10px] text-gray-400 font-mono shrink-0">
+                <p className="text-[10px] text-slate-400 font-mono shrink-0">
                   Точка входа: <span className="text-blue-300">{selectedFlow.entryPoint}</span> | Тип: <span className="text-purple-300 uppercase">{selectedFlow.flowType}</span>
                 </p>
               </div>
@@ -987,7 +987,7 @@ ${selectedFlow.sequenceDiagramPlantUml || selectedFlow.sequenceDiagramMermaid ||
               </div>
             </>
           ) : (
-            <div className="p-12 text-center text-gray-500 text-xs font-mono m-auto">
+            <div className="p-12 text-center text-slate-500 text-xs font-mono m-auto">
               Выберите элемент экранной формы для просмотра диаграммы
             </div>
           )}
@@ -995,15 +995,15 @@ ${selectedFlow.sequenceDiagramPlantUml || selectedFlow.sequenceDiagramMermaid ||
 
         {/* ================= RIGHT COLLAPSIBLE TRACE PANEL (STEP-BY-STEP TRACE) ================= */}
         {isRightTraceOpen && (
-          <div className="w-80 shrink-0 border-l border-gray-800 flex flex-col h-full bg-gray-950/90 transition-all duration-200 ease-in-out select-none animate-in slide-in-from-right duration-200">
-            <div className="p-2.5 border-b border-gray-800 flex items-center justify-between shrink-0">
+          <div className="w-80 shrink-0 border-l border-[#1E2330] flex flex-col h-full bg-[#111318] transition-all duration-200 ease-in-out select-none">
+            <div className="p-2.5 border-b border-[#1E2330] flex items-center justify-between shrink-0">
               <div className="flex items-center space-x-1.5 min-w-0">
                 <FileText size={13} className="text-blue-400 shrink-0" />
-                <span className="text-xs font-bold text-gray-200 truncate uppercase tracking-wider">Пошаговая трассировка</span>
+                <span className="text-xs font-bold text-slate-200 truncate uppercase tracking-wider font-mono">Пошаговая трассировка</span>
               </div>
               <button
                 onClick={() => setIsRightTraceOpen(false)}
-                className="p-1 hover:bg-gray-800 text-gray-400 hover:text-gray-200 rounded transition"
+                className="p-1 hover:bg-[#1E222D] text-slate-400 hover:text-slate-200 rounded transition"
                 title="Скрыть панель трассировки"
               >
                 <PanelRightClose size={13} />
@@ -1017,8 +1017,8 @@ ${selectedFlow.sequenceDiagramPlantUml || selectedFlow.sequenceDiagramMermaid ||
                   <div
                     key={step.order}
                     onClick={() => step.sourceFile && onNavigateToSource?.(step.sourceFile, step.sourceLine || 1)}
-                    className={`glass-panel p-2.5 rounded-xl border border-gray-800/80 text-xs space-y-1.5 transition ${
-                      step.sourceFile ? 'cursor-pointer hover:border-blue-500/60 hover:bg-blue-950/20 group' : ''
+                    className={`bg-[#161922] p-2.5 rounded border border-[#1E2330] text-xs space-y-1.5 transition ${
+                      step.sourceFile ? 'cursor-pointer hover:border-blue-500/60 hover:bg-[#1E222D] group' : ''
                     }`}
                     title={step.sourceFile ? `Перейти к ${step.sourceFile}:${step.sourceLine || 1}` : undefined}
                   >
@@ -1032,38 +1032,38 @@ ${selectedFlow.sequenceDiagramPlantUml || selectedFlow.sequenceDiagramMermaid ||
                           <ExternalLink size={8} />
                         </span>
                       ) : (
-                        <span className="text-[10px] font-mono text-gray-500">Шаг {step.order}</span>
+                        <span className="text-[10px] font-mono text-slate-500">Шаг {step.order}</span>
                       )}
                     </div>
 
                     <div className="flex items-center space-x-1.5 text-[11px] font-semibold">
-                      <span className="text-gray-200 truncate">{step.from}</span>
-                      <ArrowRight size={11} className="text-gray-500 shrink-0" />
+                      <span className="text-slate-200 truncate">{step.from}</span>
+                      <ArrowRight size={11} className="text-slate-500 shrink-0" />
                       <span className="text-emerald-300 truncate">{step.to}</span>
                     </div>
 
-                    <div className="p-1.5 bg-gray-950 rounded border border-gray-900 text-[10px] font-mono text-blue-300 break-all">
+                    <div className="p-1.5 bg-[#0D0E14] rounded border border-[#1E2330] text-[10px] font-mono text-blue-300 break-all">
                       {step.call}
                     </div>
                   </div>
                 ))
               ) : activeMode === 'backend' && selectedFlow ? (
                 (selectedFlow.steps || []).map(step => (
-                  <div key={step.order} className="glass-panel p-2.5 rounded-xl border border-gray-800/80 text-xs space-y-1.5">
+                  <div key={step.order} className="bg-[#161922] p-2.5 rounded border border-[#1E2330] text-xs space-y-1.5">
                     <div className="flex items-center justify-between">
                       <span className="w-4 h-4 rounded-full bg-blue-900 text-blue-300 flex items-center justify-center font-mono text-[9px] font-bold shrink-0">
                         {step.order}
                       </span>
-                      <span className="text-[10px] font-mono text-gray-500">Шаг {step.order}</span>
+                      <span className="text-[10px] font-mono text-slate-500">Шаг {step.order}</span>
                     </div>
 
                     <div className="flex items-center space-x-1.5 text-[11px] font-semibold">
-                      <span className="text-gray-200 truncate">{step.from}</span>
-                      <ArrowRight size={11} className="text-gray-500 shrink-0" />
+                      <span className="text-slate-200 truncate">{step.from}</span>
+                      <ArrowRight size={11} className="text-slate-500 shrink-0" />
                       <span className="text-blue-300 truncate">{step.to}</span>
                     </div>
 
-                    <div className="p-1.5 bg-gray-950 rounded border border-gray-900 text-[10px] font-mono text-blue-300 break-all">
+                    <div className="p-1.5 bg-[#0D0E14] rounded border border-[#1E2330] text-[10px] font-mono text-blue-300 break-all">
                       {step.call}
                     </div>
                   </div>

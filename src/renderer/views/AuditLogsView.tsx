@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AuditLogItem } from '../../shared/types';
-import { ShieldCheck, Download, Search, CheckCircle2, AlertTriangle, XCircle } from 'lucide-react';
+import { ShieldCheck, Download, Search, CheckCircle2 } from 'lucide-react';
 
 export const AuditLogsView: React.FC = () => {
   const [logs, setLogs] = useState<AuditLogItem[]>([]);
@@ -53,59 +53,71 @@ export const AuditLogsView: React.FC = () => {
   };
 
   return (
-    <div className="p-8 space-y-6 overflow-y-auto h-full max-w-6xl mx-auto">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-gray-100 flex items-center space-x-2">
-            <ShieldCheck className="text-emerald-400" size={22} />
-            <span>Информационная безопасность и Журнал аудита</span>
-          </h2>
-          <p className="text-xs text-gray-400 mt-1">
-            Реестр всех операций доступа к репозиториям, проверки токенов, запусков анализа и обращений к локальной LLM.
-          </p>
+    <div className="h-full flex flex-col overflow-hidden bg-[#090A0F] text-[#F1F5F9] select-none">
+      {/* Header */}
+      <div className="p-4 border-b border-[#1E2330] bg-[#111318] flex items-center justify-between shrink-0">
+        <div className="flex items-center space-x-3">
+          <div className="p-2 rounded bg-[#161922] border border-[#1E2330] text-emerald-400">
+            <ShieldCheck size={18} />
+          </div>
+          <div>
+            <h2 className="text-sm font-semibold text-slate-100 flex items-center space-x-2">
+              <span>Информационная безопасность и Журнал аудита</span>
+              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/40 px-1.5 py-0.2 rounded border border-emerald-900/50">
+                Air-Gap Compliant
+              </span>
+            </h2>
+            <p className="text-xs text-slate-400">
+              Реестр доступа к репозиториям, проверки токенов, запусков анализа и локальных вызовов Qwen
+            </p>
+          </div>
         </div>
+
         <button
           onClick={exportLogs}
-          className="flex items-center space-x-1.5 px-3 py-1.5 bg-gray-900 hover:bg-gray-800 border border-gray-700 text-gray-200 rounded-lg text-xs transition"
+          className="flex items-center space-x-1.5 px-3 py-1.5 bg-[#161922] hover:bg-[#1E222D] border border-[#1E2330] text-slate-200 rounded text-xs transition"
         >
           <Download size={13} />
-          <span>Экспорт журнала</span>
+          <span>Экспорт JSON</span>
         </button>
       </div>
 
-      <div className="glass-panel rounded-xl overflow-hidden space-y-3 p-4">
-        <div className="relative">
-          <Search size={14} className="absolute left-3 top-2.5 text-gray-500" />
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto p-5 space-y-3">
+        {/* Search */}
+        <div className="relative max-w-md">
+          <Search size={14} className="absolute left-3 top-2.5 text-slate-500" />
           <input
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Поиск по журналу безопасности..."
-            className="w-full bg-gray-900 border border-gray-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-blue-500 font-mono"
+            className="w-full bg-[#111318] border border-[#1E2330] rounded pl-8 pr-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-mono"
           />
         </div>
 
-        <div className="overflow-x-auto">
+        {/* Table */}
+        <div className="bg-[#111318] border border-[#1E2330] rounded overflow-hidden">
           <table className="w-full text-left text-xs">
-            <thead className="bg-gray-950 text-gray-400 font-mono text-[11px] uppercase border-b border-gray-800">
+            <thead className="bg-[#161922] text-slate-400 font-mono text-[11px] uppercase border-b border-[#1E2330]">
               <tr>
-                <th className="p-2.5">Время (UTC)</th>
-                <th className="p-2.5">Действие</th>
-                <th className="p-2.5">Объект</th>
-                <th className="p-2.5">Детали</th>
-                <th className="p-2.5">Статус</th>
+                <th className="p-3">Время (UTC)</th>
+                <th className="p-3">Действие</th>
+                <th className="p-3">Объект</th>
+                <th className="p-3">Детали</th>
+                <th className="p-3">Статус</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-800 font-mono">
+            <tbody className="divide-y divide-[#1E2330] font-mono text-xs">
               {filtered.map(log => (
-                <tr key={log.id} className="hover:bg-gray-900/40">
-                  <td className="p-2.5 text-gray-400">{new Date(log.timestamp).toLocaleString()}</td>
-                  <td className="p-2.5 font-semibold text-gray-200">{log.action}</td>
-                  <td className="p-2.5 text-blue-400">{log.targetType} ({log.targetId})</td>
-                  <td className="p-2.5 text-gray-300 font-sans text-xs">{log.details}</td>
-                  <td className="p-2.5">
-                    <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 text-[10px]">
-                      <CheckCircle2 size={10} />
+                <tr key={log.id} className="hover:bg-[#161922]/60 transition">
+                  <td className="p-3 text-slate-400 text-[11px]">{new Date(log.timestamp).toLocaleString()}</td>
+                  <td className="p-3 font-semibold text-slate-200">{log.action}</td>
+                  <td className="p-3 text-blue-400">{log.targetType} ({log.targetId})</td>
+                  <td className="p-3 text-slate-300 font-sans text-xs">{log.details}</td>
+                  <td className="p-3">
+                    <span className="inline-flex items-center space-x-1 px-1.5 py-0.5 rounded bg-emerald-950/50 text-emerald-400 border border-emerald-900/50 text-[10px]">
+                      <CheckCircle2 size={11} />
                       <span>{log.status}</span>
                     </span>
                   </td>
@@ -118,3 +130,4 @@ export const AuditLogsView: React.FC = () => {
     </div>
   );
 };
+

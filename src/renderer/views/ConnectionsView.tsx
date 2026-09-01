@@ -174,331 +174,340 @@ export const ConnectionsView: React.FC = () => {
   };
 
   return (
-    <div className="p-8 max-w-4xl mx-auto space-y-8 overflow-y-auto h-full">
-      <div>
-        <h2 className="text-xl font-bold text-gray-100 flex items-center space-x-2">
-          <KeyRound className="text-blue-400" size={22} />
-          <span>Подключения и Учетные записи (PAT & LiteLLM & PostgreSQL)</span>
-        </h2>
-        <p className="text-xs text-gray-400 mt-1">
-          Настройте и интерактивно протестируйте подключение к внутренним сервисам Bitbucket, Confluence, базе данных PostgreSQL и локальной нейросети LiteLLM / Qwen.
-        </p>
+    <div className="h-full flex flex-col overflow-hidden bg-[#090A0F] text-[#F1F5F9] select-none">
+      {/* Header */}
+      <div className="p-4 border-b border-[#1E2330] bg-[#111318] flex items-center justify-between shrink-0">
+        <div className="flex items-center space-x-3">
+          <div className="p-2 rounded bg-[#161922] border border-[#1E2330] text-blue-400">
+            <KeyRound size={18} />
+          </div>
+          <div>
+            <h2 className="text-sm font-semibold text-slate-100 flex items-center space-x-2">
+              <span>Подключения и Учетные записи (PAT & LiteLLM & PostgreSQL)</span>
+            </h2>
+            <p className="text-xs text-slate-400">
+              Настройка и интерактивное тестирование подключения к Bitbucket, Confluence, PostgreSQL и LiteLLM / Qwen
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div className="space-y-6">
-        {/* 1. Bitbucket Server */}
-        <div className="glass-panel p-6 rounded-xl space-y-4 border-l-4 border-l-blue-500">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2 text-sm font-semibold text-gray-200">
-              <Server size={18} className="text-blue-400" />
-              <span>Bitbucket Server / Data Center</span>
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto p-5">
+        <div className="max-w-4xl space-y-4">
+          {/* 1. Bitbucket Server */}
+          <div className="bg-[#161922] border border-[#1E2330] rounded p-5 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2 text-xs font-semibold text-slate-200">
+                <Server size={16} className="text-blue-400" />
+                <span>Bitbucket Server / Data Center</span>
+              </div>
+              <span className="text-[10px] font-mono bg-[#090A0F] text-slate-400 px-2 py-0.5 rounded border border-[#1E2330]">
+                Personal Access Token (PAT)
+              </span>
             </div>
-            <span className="text-[10px] font-mono bg-blue-950/60 text-blue-400 px-2 py-0.5 rounded border border-blue-800/40">
-              Personal Access Token (PAT)
-            </span>
-          </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">URL сервера Bitbucket</label>
-              <input
-                type="text"
-                value={bbUrl}
-                onChange={e => setBbUrl(e.target.value)}
-                placeholder="https://bitbucket.corp.local"
-                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-blue-500 font-mono"
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">Personal Access Token (PAT)</label>
-              <input
-                type="password"
-                value={bbToken}
-                onChange={e => setBbToken(e.target.value)}
-                placeholder="Вставьте PAT токен Bitbucket"
-                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-blue-500 font-mono"
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between pt-2">
-            <div className="text-xs">
-              {testResult?.id === 'bitbucket' && (
-                <div className={`flex items-center space-x-1.5 ${testResult.success ? 'text-emerald-400' : 'text-red-400'}`}>
-                  {testResult.success ? <CheckCircle2 size={14} /> : <XCircle size={14} />}
-                  <span>{testResult.message}</span>
-                </div>
-              )}
-            </div>
-            <button
-              onClick={() => handleSaveAndTest('bitbucket')}
-              disabled={testingId === 'bitbucket'}
-              className="flex items-center space-x-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-medium transition disabled:opacity-50"
-            >
-              {testingId === 'bitbucket' && <RefreshCw size={13} className="animate-spin" />}
-              <span>Сохранить и проверить связь</span>
-            </button>
-          </div>
-        </div>
-
-        {/* 2. Confluence Server */}
-        <div className="glass-panel p-6 rounded-xl space-y-4 border-l-4 border-l-purple-500">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2 text-sm font-semibold text-gray-200">
-              <Share2 size={18} className="text-purple-400" />
-              <span>Confluence Server / Data Center</span>
-            </div>
-            <span className="text-[10px] font-mono bg-purple-950/60 text-purple-400 px-2 py-0.5 rounded border border-purple-800/40">
-              PAT Авторизация (Только редактируемые пространства)
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">URL сервера Confluence</label>
-              <input
-                type="text"
-                value={confUrl}
-                onChange={e => setConfUrl(e.target.value)}
-                placeholder="https://confluence.corp.local"
-                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-purple-500 font-mono"
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">Personal Access Token (PAT)</label>
-              <input
-                type="password"
-                value={confToken}
-                onChange={e => setConfToken(e.target.value)}
-                placeholder="Вставьте PAT токен Confluence"
-                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-purple-500 font-mono"
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between pt-2">
-            <div className="text-xs">
-              {testResult?.id === 'confluence' && (
-                <div className={`flex items-center space-x-1.5 ${testResult.success ? 'text-emerald-400' : 'text-red-400'}`}>
-                  {testResult.success ? <CheckCircle2 size={14} /> : <XCircle size={14} />}
-                  <span>{testResult.message}</span>
-                </div>
-              )}
-            </div>
-            <button
-              onClick={() => handleSaveAndTest('confluence')}
-              disabled={testingId === 'confluence'}
-              className="flex items-center space-x-1.5 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-xs font-medium transition disabled:opacity-50"
-            >
-              {testingId === 'confluence' && <RefreshCw size={13} className="animate-spin" />}
-              <span>Сохранить и проверить связь</span>
-            </button>
-          </div>
-        </div>
-
-        {/* 3. PostgreSQL Direct Database Connection */}
-        <div className="glass-panel p-6 rounded-xl space-y-4 border-l-4 border-l-amber-500">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2 text-sm font-semibold text-gray-200">
-              <Database size={18} className="text-amber-400" />
-              <span>База данных PostgreSQL (Direct Read-Only Connection)</span>
-            </div>
-            <span className="text-[10px] font-mono bg-amber-950/60 text-amber-400 px-2 py-0.5 rounded border border-amber-800/40">
-              Read-Only Schema Inspector
-            </span>
-          </div>
-
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">Хост (Host)</label>
-              <input
-                type="text"
-                value={pgHost}
-                onChange={e => setPgHost(e.target.value)}
-                placeholder="localhost / pg.corp.local"
-                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-amber-500 font-mono"
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">Порт (Port)</label>
-              <input
-                type="number"
-                value={pgPort}
-                onChange={e => setPgPort(Number(e.target.value))}
-                placeholder="5432"
-                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-amber-500 font-mono"
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">Имя базы данных</label>
-              <input
-                type="text"
-                value={pgDatabase}
-                onChange={e => setPgDatabase(e.target.value)}
-                placeholder="app_db"
-                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-amber-500 font-mono"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">Пользователь (Username)</label>
-              <input
-                type="text"
-                value={pgUser}
-                onChange={e => setPgUser(e.target.value)}
-                placeholder="postgres / readonly_user"
-                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-amber-500 font-mono"
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">Пароль (Шифруется AES-256)</label>
-              <input
-                type="password"
-                value={pgPassword}
-                onChange={e => setPgPassword(e.target.value)}
-                placeholder="Пароль пользователя БД"
-                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-amber-500 font-mono"
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between pt-2">
-            <div className="text-xs">
-              {testResult?.id === 'database' && (
-                <div className={`flex items-center space-x-1.5 ${testResult.success ? 'text-emerald-400' : 'text-red-400'}`}>
-                  {testResult.success ? <CheckCircle2 size={14} /> : <XCircle size={14} />}
-                  <span>{testResult.message}</span>
-                </div>
-              )}
-            </div>
-            <button
-              onClick={() => handleSaveAndTest('database')}
-              disabled={testingId === 'database'}
-              className="flex items-center space-x-1.5 px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-medium transition disabled:opacity-50"
-            >
-              {testingId === 'database' && <RefreshCw size={13} className="animate-spin" />}
-              <span>Сохранить и проверить PostgreSQL</span>
-            </button>
-          </div>
-        </div>
-
-        {/* 4. LiteLLM Proxy / Qwen */}
-        <div className="glass-panel p-6 rounded-xl space-y-4 border-l-4 border-l-emerald-500">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2 text-sm font-semibold text-gray-200">
-              <Sparkles size={18} className="text-emerald-400" />
-              <span>Локальная нейросеть / LiteLLM Proxy (Qwen / OpenAI-compatible)</span>
-            </div>
-            <span className="text-[10px] font-mono bg-emerald-950/60 text-emerald-400 px-2 py-0.5 rounded border border-emerald-800/40">
-              LiteLLM Server & API Key
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">URL сервера LiteLLM</label>
-              <input
-                type="text"
-                value={qwenUrl}
-                onChange={e => setQwenUrl(e.target.value)}
-                placeholder="http://localhost:4000/v1 или http://litellm.corp.local:4000"
-                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-emerald-500 font-mono"
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">API Key / Токен авторизации LiteLLM</label>
-              <input
-                type="password"
-                value={qwenToken}
-                onChange={e => setQwenToken(e.target.value)}
-                placeholder="sk-..."
-                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-emerald-500 font-mono"
-              />
-            </div>
-          </div>
-
-          {/* Optional Model override */}
-          <div>
-            <button
-              onClick={() => setShowAdvancedModel(!showAdvancedModel)}
-              className="text-[11px] text-gray-400 hover:text-gray-200 flex items-center space-x-1"
-            >
-              <SlidersHorizontal size={11} />
-              <span>{showAdvancedModel ? 'Скрыть дополнительное имя модели' : 'Дополнительно: указать специфическое имя модели (опционально)'}</span>
-            </button>
-            {showAdvancedModel && (
-              <div className="mt-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[11px] text-slate-400 mb-1 font-mono">URL сервера Bitbucket</label>
                 <input
                   type="text"
-                  value={qwenModel}
-                  onChange={e => setQwenModel(e.target.value)}
-                  placeholder="Оставьте пустым для авто-роутинга LiteLLM или укажите qwen2.5-coder"
-                  className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-emerald-500 font-mono"
+                  value={bbUrl}
+                  onChange={e => setBbUrl(e.target.value)}
+                  placeholder="https://bitbucket.corp.local"
+                  className="w-full bg-[#0D0E14] border border-[#1E2330] rounded px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-mono"
                 />
               </div>
-            )}
+              <div>
+                <label className="block text-[11px] text-slate-400 mb-1 font-mono">Personal Access Token (PAT)</label>
+                <input
+                  type="password"
+                  value={bbToken}
+                  onChange={e => setBbToken(e.target.value)}
+                  placeholder="Вставьте PAT токен Bitbucket"
+                  className="w-full bg-[#0D0E14] border border-[#1E2330] rounded px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-mono"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-1">
+              <div className="text-xs font-mono">
+                {testResult?.id === 'bitbucket' && (
+                  <div className={`flex items-center space-x-1.5 ${testResult.success ? 'text-emerald-400' : 'text-rose-400'}`}>
+                    {testResult.success ? <CheckCircle2 size={13} /> : <XCircle size={13} />}
+                    <span>{testResult.message}</span>
+                  </div>
+                )}
+              </div>
+              <button
+                onClick={() => handleSaveAndTest('bitbucket')}
+                disabled={testingId === 'bitbucket'}
+                className="flex items-center space-x-1.5 px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-medium transition disabled:opacity-50"
+              >
+                {testingId === 'bitbucket' && <RefreshCw size={13} className="animate-spin" />}
+                <span>Сохранить и проверить связь</span>
+              </button>
+            </div>
           </div>
 
-          <div className="flex items-center justify-between pt-1">
-            <div className="text-xs">
-              {testResult?.id === 'llm' && (
-                <div className={`flex items-center space-x-1.5 ${testResult.success ? 'text-emerald-400' : 'text-red-400'}`}>
-                  {testResult.success ? <CheckCircle2 size={14} /> : <XCircle size={14} />}
-                  <span>{testResult.message}</span>
+          {/* 2. Confluence Server */}
+          <div className="bg-[#161922] border border-[#1E2330] rounded p-5 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2 text-xs font-semibold text-slate-200">
+                <Share2 size={16} className="text-sky-400" />
+                <span>Confluence Server / Data Center</span>
+              </div>
+              <span className="text-[10px] font-mono bg-[#090A0F] text-slate-400 px-2 py-0.5 rounded border border-[#1E2330]">
+                PAT Авторизация
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[11px] text-slate-400 mb-1 font-mono">URL сервера Confluence</label>
+                <input
+                  type="text"
+                  value={confUrl}
+                  onChange={e => setConfUrl(e.target.value)}
+                  placeholder="https://confluence.corp.local"
+                  className="w-full bg-[#0D0E14] border border-[#1E2330] rounded px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-mono"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] text-slate-400 mb-1 font-mono">Personal Access Token (PAT)</label>
+                <input
+                  type="password"
+                  value={confToken}
+                  onChange={e => setConfToken(e.target.value)}
+                  placeholder="Вставьте PAT токен Confluence"
+                  className="w-full bg-[#0D0E14] border border-[#1E2330] rounded px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-mono"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-1">
+              <div className="text-xs font-mono">
+                {testResult?.id === 'confluence' && (
+                  <div className={`flex items-center space-x-1.5 ${testResult.success ? 'text-emerald-400' : 'text-rose-400'}`}>
+                    {testResult.success ? <CheckCircle2 size={13} /> : <XCircle size={13} />}
+                    <span>{testResult.message}</span>
+                  </div>
+                )}
+              </div>
+              <button
+                onClick={() => handleSaveAndTest('confluence')}
+                disabled={testingId === 'confluence'}
+                className="flex items-center space-x-1.5 px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-medium transition disabled:opacity-50"
+              >
+                {testingId === 'confluence' && <RefreshCw size={13} className="animate-spin" />}
+                <span>Сохранить и проверить связь</span>
+              </button>
+            </div>
+          </div>
+
+          {/* 3. PostgreSQL Direct Database Connection */}
+          <div className="bg-[#161922] border border-[#1E2330] rounded p-5 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2 text-xs font-semibold text-slate-200">
+                <Database size={16} className="text-amber-400" />
+                <span>База данных PostgreSQL (Direct Read-Only Connection)</span>
+              </div>
+              <span className="text-[10px] font-mono bg-[#090A0F] text-slate-400 px-2 py-0.5 rounded border border-[#1E2330]">
+                Read-Only Schema Inspector
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div>
+                <label className="block text-[11px] text-slate-400 mb-1 font-mono">Хост (Host)</label>
+                <input
+                  type="text"
+                  value={pgHost}
+                  onChange={e => setPgHost(e.target.value)}
+                  placeholder="localhost / pg.corp.local"
+                  className="w-full bg-[#0D0E14] border border-[#1E2330] rounded px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-mono"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] text-slate-400 mb-1 font-mono">Порт (Port)</label>
+                <input
+                  type="number"
+                  value={pgPort}
+                  onChange={e => setPgPort(Number(e.target.value))}
+                  placeholder="5432"
+                  className="w-full bg-[#0D0E14] border border-[#1E2330] rounded px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-mono"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] text-slate-400 mb-1 font-mono">Имя базы данных</label>
+                <input
+                  type="text"
+                  value={pgDatabase}
+                  onChange={e => setPgDatabase(e.target.value)}
+                  placeholder="app_db"
+                  className="w-full bg-[#0D0E14] border border-[#1E2330] rounded px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-mono"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[11px] text-slate-400 mb-1 font-mono">Пользователь (Username)</label>
+                <input
+                  type="text"
+                  value={pgUser}
+                  onChange={e => setPgUser(e.target.value)}
+                  placeholder="postgres / readonly_user"
+                  className="w-full bg-[#0D0E14] border border-[#1E2330] rounded px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-mono"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] text-slate-400 mb-1 font-mono">Пароль (Шифруется AES-256)</label>
+                <input
+                  type="password"
+                  value={pgPassword}
+                  onChange={e => setPgPassword(e.target.value)}
+                  placeholder="Пароль пользователя БД"
+                  className="w-full bg-[#0D0E14] border border-[#1E2330] rounded px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-mono"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-1">
+              <div className="text-xs font-mono">
+                {testResult?.id === 'database' && (
+                  <div className={`flex items-center space-x-1.5 ${testResult.success ? 'text-emerald-400' : 'text-rose-400'}`}>
+                    {testResult.success ? <CheckCircle2 size={13} /> : <XCircle size={13} />}
+                    <span>{testResult.message}</span>
+                  </div>
+                )}
+              </div>
+              <button
+                onClick={() => handleSaveAndTest('database')}
+                disabled={testingId === 'database'}
+                className="flex items-center space-x-1.5 px-3.5 py-1.5 bg-[#1E222D] hover:bg-[#2E3748] border border-[#1E2330] text-slate-200 rounded text-xs font-medium transition disabled:opacity-50"
+              >
+                {testingId === 'database' && <RefreshCw size={13} className="animate-spin" />}
+                <span>Сохранить и проверить PostgreSQL</span>
+              </button>
+            </div>
+          </div>
+
+          {/* 4. LiteLLM Proxy / Qwen */}
+          <div className="bg-[#161922] border border-[#1E2330] rounded p-5 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2 text-xs font-semibold text-slate-200">
+                <Sparkles size={16} className="text-purple-400" />
+                <span>Локальная нейросеть / LiteLLM Proxy (Qwen / OpenAI-compatible)</span>
+              </div>
+              <span className="text-[10px] font-mono bg-[#090A0F] text-slate-400 px-2 py-0.5 rounded border border-[#1E2330]">
+                LiteLLM Server & API Key
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[11px] text-slate-400 mb-1 font-mono">URL сервера LiteLLM</label>
+                <input
+                  type="text"
+                  value={qwenUrl}
+                  onChange={e => setQwenUrl(e.target.value)}
+                  placeholder="http://localhost:4000/v1"
+                  className="w-full bg-[#0D0E14] border border-[#1E2330] rounded px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-mono"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] text-slate-400 mb-1 font-mono">API Key / Токен LiteLLM</label>
+                <input
+                  type="password"
+                  value={qwenToken}
+                  onChange={e => setQwenToken(e.target.value)}
+                  placeholder="sk-..."
+                  className="w-full bg-[#0D0E14] border border-[#1E2330] rounded px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-mono"
+                />
+              </div>
+            </div>
+
+            <div>
+              <button
+                onClick={() => setShowAdvancedModel(!showAdvancedModel)}
+                className="text-[11px] text-slate-400 hover:text-slate-200 flex items-center space-x-1 font-mono"
+              >
+                <SlidersHorizontal size={11} />
+                <span>{showAdvancedModel ? 'Скрыть имя модели' : 'Дополнительно: указать специфическое имя модели'}</span>
+              </button>
+              {showAdvancedModel && (
+                <div className="mt-2">
+                  <input
+                    type="text"
+                    value={qwenModel}
+                    onChange={e => setQwenModel(e.target.value)}
+                    placeholder="qwen2.5-coder"
+                    className="w-full bg-[#0D0E14] border border-[#1E2330] rounded px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-mono"
+                  />
                 </div>
               )}
             </div>
-            <button
-              onClick={() => handleSaveAndTest('llm')}
-              disabled={testingId === 'llm'}
-              className="flex items-center space-x-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-medium transition disabled:opacity-50"
-            >
-              {testingId === 'llm' && <RefreshCw size={13} className="animate-spin" />}
-              <span>Сохранить и проверить связь</span>
-            </button>
-          </div>
 
-          {/* Interactive Test Prompt to Live LiteLLM Model */}
-          <div className="p-4 bg-gray-950/70 border border-emerald-900/40 rounded-xl space-y-3 mt-4">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-semibold text-emerald-400 flex items-center space-x-1.5">
-                <Terminal size={14} />
-                <span>Интерактивный тест LiteLLM / Qwen (Пробный запрос)</span>
-              </span>
-              {qwenLatency && (
-                <span className="font-mono text-[11px] text-gray-400 flex items-center space-x-1">
-                  <Activity size={12} className="text-emerald-400" />
-                  <span>Задержка: {qwenLatency} мс</span>
-                </span>
-              )}
-            </div>
-
-            <div className="flex space-x-2">
-              <input
-                type="text"
-                value={qwenPrompt}
-                onChange={e => setQwenPrompt(e.target.value)}
-                placeholder="Введите тестовый вопрос для LiteLLM..."
-                className="flex-1 bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-emerald-500 font-mono"
-              />
+            <div className="flex items-center justify-between pt-1">
+              <div className="text-xs font-mono">
+                {testResult?.id === 'llm' && (
+                  <div className={`flex items-center space-x-1.5 ${testResult.success ? 'text-emerald-400' : 'text-rose-400'}`}>
+                    {testResult.success ? <CheckCircle2 size={13} /> : <XCircle size={13} />}
+                    <span>{testResult.message}</span>
+                  </div>
+                )}
+              </div>
               <button
-                onClick={handleTestQwenPrompt}
-                disabled={isPromptTesting}
-                className="flex items-center space-x-1.5 px-4 py-2 bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg text-xs font-medium transition disabled:opacity-50 shrink-0"
+                onClick={() => handleSaveAndTest('llm')}
+                disabled={testingId === 'llm'}
+                className="flex items-center space-x-1.5 px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-medium transition disabled:opacity-50"
               >
-                {isPromptTesting ? <RefreshCw size={13} className="animate-spin" /> : <Send size={13} />}
-                <span>Спросить LiteLLM</span>
+                {testingId === 'llm' && <RefreshCw size={13} className="animate-spin" />}
+                <span>Сохранить и проверить связь</span>
               </button>
             </div>
 
-            {qwenResponse && (
-              <div className="p-3 bg-gray-900/90 rounded-lg border border-emerald-800/50 text-xs font-mono text-emerald-300 space-y-1">
-                <span className="text-[10px] text-gray-500 uppercase block font-sans font-semibold">Ответ сервера LiteLLM:</span>
-                <p className="leading-relaxed whitespace-pre-wrap">{qwenResponse}</p>
+            {/* Interactive Test Prompt */}
+            <div className="p-3.5 bg-[#0D0E14] border border-[#1E2330] rounded space-y-2.5 mt-3">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-semibold text-slate-200 flex items-center space-x-1.5 text-[11px]">
+                  <Terminal size={13} className="text-blue-400" />
+                  <span>Интерактивный тест LiteLLM / Qwen (Пробный запрос)</span>
+                </span>
+                {qwenLatency && (
+                  <span className="font-mono text-[10px] text-slate-400 flex items-center space-x-1">
+                    <Activity size={11} className="text-blue-400" />
+                    <span>{qwenLatency}ms</span>
+                  </span>
+                )}
               </div>
-            )}
+
+              <div className="flex space-x-2">
+                <input
+                  type="text"
+                  value={qwenPrompt}
+                  onChange={e => setQwenPrompt(e.target.value)}
+                  placeholder="Введите тестовый вопрос для LiteLLM..."
+                  className="flex-1 bg-[#111318] border border-[#1E2330] rounded px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-mono"
+                />
+                <button
+                  onClick={handleTestQwenPrompt}
+                  disabled={isPromptTesting}
+                  className="flex items-center space-x-1.5 px-3.5 py-1.5 bg-[#1E222D] hover:bg-[#2E3748] border border-[#1E2330] text-slate-200 rounded text-xs font-medium transition disabled:opacity-50 shrink-0"
+                >
+                  {isPromptTesting ? <RefreshCw size={13} className="animate-spin" /> : <Send size={13} />}
+                  <span>Спросить LiteLLM</span>
+                </button>
+              </div>
+
+              {qwenResponse && (
+                <div className="p-3 bg-[#111318] rounded border border-[#1E2330] text-xs font-mono text-slate-300 space-y-1">
+                  <span className="text-[10px] text-slate-500 uppercase block font-mono font-semibold">Ответ сервера LiteLLM:</span>
+                  <p className="leading-relaxed whitespace-pre-wrap">{qwenResponse}</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

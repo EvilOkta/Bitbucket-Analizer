@@ -134,41 +134,48 @@ export const RepositoriesView: React.FC<RepositoriesViewProps> = ({
   }, [groupedRepos, filter]);
 
   return (
-    <div className="p-8 space-y-6 overflow-y-auto h-full max-w-6xl mx-auto">
+    <div className="h-full flex flex-col overflow-hidden bg-[#090A0F] text-[#F1F5F9] select-none">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-xl font-bold text-gray-100 flex items-center space-x-2">
-            <FolderGit2 className="text-blue-400" size={22} />
-            <span>Репозитории и источники проектов</span>
-          </h2>
-          <p className="text-xs text-gray-400 mt-1">
-            Поддержка Bitbucket Server, локальных Git-папок, монорепозиториев и классификатора эволюционных копий.
-          </p>
+      <div className="p-4 border-b border-[#1E2330] bg-[#111318] flex items-center justify-between shrink-0">
+        <div className="flex items-center space-x-3">
+          <div className="p-2 rounded bg-[#161922] border border-[#1E2330] text-blue-400">
+            <FolderGit2 size={18} />
+          </div>
+          <div>
+            <h2 className="text-sm font-semibold text-slate-100 flex items-center space-x-2">
+              <span>Репозитории и Источники проектов</span>
+              <span className="text-[10px] font-mono text-slate-400 bg-[#161922] px-1.5 py-0.2 rounded border border-[#1E2330]">
+                {repos.length} репозиториев
+              </span>
+            </h2>
+            <p className="text-xs text-slate-400">
+              Bitbucket Server, локальные папки, монорепозитории и эволюционные копии
+            </p>
+          </div>
         </div>
         
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex items-center space-x-2">
           {onOpenLocalFolder && (
             <button
               onClick={onOpenLocalFolder}
-              className="flex items-center space-x-1.5 px-3 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-lg text-xs font-semibold shadow-md shadow-blue-600/20 transition"
+              className="flex items-center space-x-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-medium transition"
               title="Выбрать локальную папку с исходным кодом или Git-репозиторий"
             >
-              <FolderOpen size={14} />
-              <span>📂 Открыть локальную папку...</span>
+              <FolderOpen size={13} />
+              <span>Открыть папку...</span>
             </button>
           )}
 
           <button
             onClick={expandAll}
-            className="flex items-center space-x-1 px-2.5 py-1.5 bg-gray-900 hover:bg-gray-800 border border-gray-800 text-gray-400 hover:text-gray-200 rounded-lg text-xs transition"
+            className="flex items-center space-x-1 px-2.5 py-1.5 bg-[#161922] hover:bg-[#1E222D] border border-[#1E2330] text-slate-300 rounded text-xs transition"
           >
             <ChevronDownSquare size={13} />
             <span>Развернуть все</span>
           </button>
           <button
             onClick={collapseAll}
-            className="flex items-center space-x-1 px-2.5 py-1.5 bg-gray-900 hover:bg-gray-800 border border-gray-800 text-gray-400 hover:text-gray-200 rounded-lg text-xs transition"
+            className="flex items-center space-x-1 px-2.5 py-1.5 bg-[#161922] hover:bg-[#1E222D] border border-[#1E2330] text-slate-300 rounded text-xs transition"
           >
             <ChevronUpSquare size={13} />
             <span>Свернуть все</span>
@@ -176,7 +183,7 @@ export const RepositoriesView: React.FC<RepositoriesViewProps> = ({
           <button
             onClick={onRefreshRepos}
             disabled={isAnalyzing}
-            className="flex items-center space-x-1.5 px-3 py-1.5 bg-gray-900 hover:bg-gray-800 border border-gray-700 text-gray-300 rounded-lg text-xs transition disabled:opacity-50"
+            className="flex items-center space-x-1.5 px-3 py-1.5 bg-[#161922] hover:bg-[#1E222D] border border-[#1E2330] text-slate-300 rounded text-xs transition disabled:opacity-50"
           >
             <RefreshCw size={13} className={isAnalyzing ? 'animate-spin' : ''} />
             <span>Обновить</span>
@@ -186,201 +193,202 @@ export const RepositoriesView: React.FC<RepositoriesViewProps> = ({
 
       {/* Analysis Active Banner */}
       {isAnalyzing && (
-        <div className="p-4 rounded-xl bg-blue-950/70 border border-blue-500/60 text-xs text-blue-200 flex items-center space-x-3 shadow-lg shadow-blue-900/30 animate-pulse">
-          <RefreshCw size={18} className="animate-spin text-blue-400 shrink-0" />
+        <div className="p-3 bg-[#111318] border-b border-blue-500/40 text-xs text-blue-200 flex items-center space-x-3 shrink-0">
+          <RefreshCw size={15} className="animate-spin text-blue-400 shrink-0" />
           <div className="flex-1">
-            <div className="font-semibold text-white">Выполняется анализ репозитория...</div>
-            <div className="text-[11px] text-blue-300 mt-0.5">
-              Скачивание реальных файлов по PAT из Bitbucket Server, извлечение API и построение Sequence/ERD диаграмм.
-            </div>
+            <span className="font-semibold text-slate-100">Выполняется анализ репозитория...</span>
+            <span className="text-[11px] text-slate-400 ml-2">
+              Скачивание файлов, извлечение API и построение Sequence/ERD диаграмм.
+            </span>
           </div>
         </div>
       )}
 
-      {/* Search Filter */}
-      <div className="relative">
-        <Search size={14} className="absolute left-3.5 top-3 text-gray-500" />
-        <input
-          type="text"
-          value={filter}
-          onChange={e => setFilter(e.target.value)}
-          placeholder="Поиск по ключу проекта (PROJ, CORE, LOCAL) или названию репозитория..."
-          className="w-full bg-gray-900/80 border border-gray-800 rounded-xl pl-9 pr-4 py-2.5 text-xs text-gray-200 focus:outline-none focus:border-blue-500 font-sans"
-        />
-      </div>
+      {/* Main Content Area */}
+      <div className="flex-1 overflow-y-auto p-5 space-y-3">
+        {/* Search Filter */}
+        <div className="relative max-w-md">
+          <Search size={14} className="absolute left-3 top-2.5 text-slate-500" />
+          <input
+            type="text"
+            value={filter}
+            onChange={e => setFilter(e.target.value)}
+            placeholder="Поиск по ключу проекта (PROJ, CORE) или репозиторию..."
+            className="w-full bg-[#111318] border border-[#1E2330] rounded pl-8 pr-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-mono"
+          />
+        </div>
 
-      {/* Grouped Projects & Repositories List */}
-      <div className="space-y-4">
-        {filteredGroups.length > 0 ? (
-          filteredGroups.map(group => {
-            // Project is expanded only if explicitly marked true or if active search filter
-            const isExpanded = filter.trim().length > 0 || !!expandedProjects[group.projectKey];
+        {/* Grouped Projects & Repositories List */}
+        <div className="space-y-3">
+          {filteredGroups.length > 0 ? (
+            filteredGroups.map(group => {
+              const isExpanded = filter.trim().length > 0 || !!expandedProjects[group.projectKey];
 
-            return (
-              <div
-                key={group.projectKey}
-                className="glass-panel rounded-xl overflow-hidden border border-gray-800/80"
-              >
-                {/* Level 1: Project Header (Spoiler) */}
+              return (
                 <div
-                  onClick={() => toggleProject(group.projectKey, group.items)}
-                  className="p-4 bg-gray-950/80 hover:bg-gray-900/70 cursor-pointer flex items-center justify-between border-b border-gray-800/60 transition select-none"
+                  key={group.projectKey}
+                  className="bg-[#111318] rounded border border-[#1E2330] overflow-hidden"
                 >
-                  <div className="flex items-center space-x-3">
-                    {isExpanded ? (
-                      <ChevronDown size={16} className="text-blue-400" />
-                    ) : (
-                      <ChevronRight size={16} className="text-gray-500" />
-                    )}
-                    <div className="flex items-center space-x-2">
-                      <FolderKanban size={16} className="text-blue-400" />
-                      <span className="text-xs font-bold font-mono px-2 py-0.5 rounded bg-blue-900/50 text-blue-300 border border-blue-700/50">
+                  {/* Project Header */}
+                  <div
+                    onClick={() => toggleProject(group.projectKey, group.items)}
+                    className="p-3 bg-[#161922] hover:bg-[#1E222D] cursor-pointer flex items-center justify-between border-b border-[#1E2330] transition select-none"
+                  >
+                    <div className="flex items-center space-x-2.5">
+                      {isExpanded ? (
+                        <ChevronDown size={14} className="text-slate-400" />
+                      ) : (
+                        <ChevronRight size={14} className="text-slate-500" />
+                      )}
+                      <FolderKanban size={15} className="text-blue-400" />
+                      <span className="text-[11px] font-mono px-1.5 py-0.2 rounded bg-[#090A0F] text-blue-400 border border-[#1E2330]">
                         {group.projectKey}
                       </span>
-                      <span className="font-semibold text-sm text-gray-200">{group.projectName}</span>
+                      <span className="font-semibold text-xs text-slate-200">{group.projectName}</span>
                     </div>
+
+                    <span className="text-[10px] font-mono text-slate-400 bg-[#090A0F] px-2 py-0.5 rounded border border-[#1E2330]">
+                      {group.items.length} {group.items.length === 1 ? 'репозиторий' : 'репозиториев'}
+                    </span>
                   </div>
 
-                  <span className="text-[11px] font-mono text-gray-400 bg-gray-900 px-2.5 py-0.5 rounded-full border border-gray-800">
-                    {group.items.length} {group.items.length === 1 ? 'репозиторий' : 'репозиториев'}
-                  </span>
-                </div>
+                  {/* Repositories in this Project */}
+                  {isExpanded && (
+                    <div className="p-3 grid grid-cols-1 md:grid-cols-2 gap-3 bg-[#111318]">
+                      {group.items.map(repo => {
+                        const isSelected = currentRepo?.id === repo.id;
+                        const availableBranches = repoBranches[repo.id] || (repo.defaultBranch ? [repo.defaultBranch] : ['master', 'main']);
+                        const currentBranch = repoSelectedBranch[repo.id] || repo.defaultBranch || availableBranches[0] || 'master';
 
-                {/* Level 2: Repositories in this Project */}
-                {isExpanded && (
-                  <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-900/20">
-                    {group.items.map(repo => {
-                      const isSelected = currentRepo?.id === repo.id;
-                      const availableBranches = repoBranches[repo.id] || (repo.defaultBranch ? [repo.defaultBranch] : ['master', 'main']);
-                      const currentBranch = repoSelectedBranch[repo.id] || repo.defaultBranch || availableBranches[0] || 'master';
+                        return (
+                          <div
+                            key={repo.id}
+                            onClick={() => {
+                              setCurrentRepo(repo);
+                              setSelectedBranch(currentBranch);
+                              loadBranchesForRepo(repo);
+                            }}
+                            className={`p-3.5 rounded border transition-all cursor-pointer flex flex-col justify-between min-h-[160px] overflow-hidden ${
+                              isSelected
+                                ? 'bg-[#161922] border-blue-500'
+                                : 'bg-[#161922] border-[#1E2330] hover:border-[#2E3748]'
+                            }`}
+                          >
+                            <div>
+                              <div className="flex items-start justify-between gap-2 mb-2">
+                                <div className="min-w-0">
+                                  <span className="font-semibold text-xs text-slate-100 truncate block">{repo.name}</span>
+                                  
+                                  {/* Badges */}
+                                  <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                                    {repo.isLocal && (
+                                      <span className="inline-flex items-center space-x-1 text-[10px] font-mono px-1.5 py-0.2 rounded bg-emerald-950/50 text-emerald-400 border border-emerald-900/50">
+                                        <Laptop size={10} />
+                                        <span>Локальный</span>
+                                      </span>
+                                    )}
 
-                      return (
-                        <div
-                          key={repo.id}
-                          onClick={() => {
-                            setCurrentRepo(repo);
-                            setSelectedBranch(currentBranch);
-                            loadBranchesForRepo(repo);
-                          }}
-                          className={`p-4 rounded-xl border transition-all cursor-pointer flex flex-col justify-between min-h-[180px] overflow-hidden ${
-                            isSelected
-                              ? 'bg-blue-950/30 border-blue-500 shadow-lg shadow-blue-500/10'
-                              : 'glass-card hover:border-gray-700'
-                          }`}
-                        >
-                          <div>
-                            <div className="flex items-start justify-between gap-2 mb-2">
-                              <div className="min-w-0">
-                                <span className="font-semibold text-sm text-gray-100 truncate block">{repo.name}</span>
-                                
-                                {/* Repo Classifier / Origin Badges */}
-                                <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
-                                  {repo.isLocal && (
-                                    <span className="inline-flex items-center space-x-1 text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-700/60">
-                                      <Laptop size={11} />
-                                      <span>Локальный</span>
-                                    </span>
-                                  )}
+                                    {repo.isLocal && repo.isGitInitialized === false && (
+                                      <span className="inline-flex items-center space-x-1 text-[10px] font-mono px-1.5 py-0.2 rounded bg-amber-950/50 text-amber-400 border border-amber-900/50">
+                                        <AlertTriangle size={10} />
+                                        <span>Без .git</span>
+                                      </span>
+                                    )}
 
-                                  {repo.isLocal && repo.isGitInitialized === false && (
-                                    <span className="inline-flex items-center space-x-1 text-[10px] font-mono px-2 py-0.5 rounded bg-amber-950/80 text-amber-300 border border-amber-700/60">
-                                      <AlertTriangle size={11} />
-                                      <span>Без .git</span>
-                                    </span>
-                                  )}
+                                    {repo.repoType === 'monorepo' && (
+                                      <span className="inline-flex items-center space-x-1 text-[10px] font-mono px-1.5 py-0.2 rounded bg-blue-950/50 text-blue-400 border border-blue-900/50 font-medium">
+                                        <Boxes size={10} />
+                                        <span>Монорепозиторий</span>
+                                      </span>
+                                    )}
 
-                                  {repo.repoType === 'monorepo' && (
-                                    <span className="inline-flex items-center space-x-1 text-[10px] font-mono px-2 py-0.5 rounded bg-purple-950/80 text-purple-300 border border-purple-700/60 font-semibold">
-                                      <Boxes size={11} />
-                                      <span>Монорепозиторий</span>
-                                    </span>
-                                  )}
+                                    {repo.repoType === 'copy_version' && repo.similarityWith && (
+                                      <span className="inline-flex items-center space-x-1 text-[10px] font-mono px-1.5 py-0.2 rounded bg-amber-950/50 text-amber-400 border border-amber-900/50 font-medium" title={`Сходство ${repo.similarityWith.score}% с ${repo.similarityWith.repoName}`}>
+                                        <Dna size={10} />
+                                        <span>{repo.similarityWith.score}% сходства</span>
+                                      </span>
+                                    )}
 
-                                  {repo.repoType === 'copy_version' && repo.similarityWith && (
-                                    <span className="inline-flex items-center space-x-1 text-[10px] font-mono px-2 py-0.5 rounded bg-amber-950/80 text-amber-300 border border-amber-700/60 font-semibold" title={`Сходство ${repo.similarityWith.score}% с ${repo.similarityWith.repoName}`}>
-                                      <Dna size={11} />
-                                      <span>{repo.similarityWith.score}% сходства с v1</span>
-                                    </span>
-                                  )}
-
-                                  {repo.repoType === 'microservice' && (
-                                    <span className="inline-flex items-center space-x-1 text-[10px] font-mono px-2 py-0.5 rounded bg-blue-950/80 text-blue-300 border border-blue-800/60">
-                                      <Layers3 size={11} />
-                                      <span>Микросервис</span>
-                                    </span>
-                                  )}
+                                    {repo.repoType === 'microservice' && (
+                                      <span className="inline-flex items-center space-x-1 text-[10px] font-mono px-1.5 py-0.2 rounded bg-[#090A0F] text-slate-400 border border-[#1E2330]">
+                                        <Layers3 size={10} />
+                                        <span>Микросервис</span>
+                                      </span>
+                                    )}
+                                  </div>
                                 </div>
+
+                                {isSelected && (
+                                  <span className="text-[10px] text-blue-400 font-mono px-1.5 py-0.2 rounded bg-blue-950/50 border border-blue-900/50 shrink-0">
+                                    Выбран
+                                  </span>
+                                )}
                               </div>
 
-                              {isSelected && (
-                                <span className="text-[10px] text-blue-400 font-medium px-2 py-0.5 rounded-full bg-blue-950 border border-blue-800 shrink-0">
-                                  Выбран
-                                </span>
-                              )}
+                              <p className="text-xs text-slate-400 mb-3 line-clamp-2 leading-relaxed">
+                                {repo.description || 'Репозиторий готов к анализу структуры, API эндпоинтов и потоков данных.'}
+                              </p>
                             </div>
 
-                            <p className="text-xs text-gray-400 mb-3 line-clamp-2">
-                              {repo.description || 'Репозиторий готов к анализу структуры, API эндпоинтов и потоков данных.'}
-                            </p>
-                          </div>
+                            {/* Card Footer */}
+                            <div className="flex flex-wrap items-center justify-between gap-2 pt-2.5 border-t border-[#1E2330] text-xs mt-auto">
+                              <div className="flex items-center space-x-2 text-slate-400 font-mono text-[11px] shrink-0">
+                                <GitBranch size={12} className="text-slate-500" />
+                                <span>Ветка:</span>
+                                <select
+                                  value={currentBranch}
+                                  onFocus={() => loadBranchesForRepo(repo)}
+                                  onChange={e => {
+                                    const val = e.target.value;
+                                    setRepoSelectedBranch(prev => ({ ...prev, [repo.id]: val }));
+                                    if (isSelected) setSelectedBranch(val);
+                                  }}
+                                  onClick={e => e.stopPropagation()}
+                                  className="bg-[#0D0E14] border border-[#1E2330] rounded px-2 py-0.5 text-[11px] text-slate-200 focus:outline-none cursor-pointer max-w-[150px] truncate"
+                                >
+                                  {availableBranches.map(b => (
+                                    <option key={b} value={b}>
+                                      {b}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
 
-                          {/* Card Footer with Dynamic Branches */}
-                          <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-gray-800/80 text-xs mt-auto">
-                            <div className="flex items-center space-x-2 text-gray-400 font-mono text-[11px] shrink-0">
-                              <GitBranch size={13} className="text-gray-500" />
-                              <span>Ветка:</span>
-                              <select
-                                value={currentBranch}
-                                onFocus={() => loadBranchesForRepo(repo)}
-                                onChange={e => {
-                                  const val = e.target.value;
-                                  setRepoSelectedBranch(prev => ({ ...prev, [repo.id]: val }));
-                                  if (isSelected) setSelectedBranch(val);
+                              <button
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  setCurrentRepo(repo);
+                                  setSelectedBranch(currentBranch);
+                                  onRunAnalysis(repo, currentBranch);
                                 }}
-                                onClick={e => e.stopPropagation()}
-                                className="bg-gray-900 border border-gray-700 rounded px-2 py-1 text-[11px] text-gray-200 focus:outline-none cursor-pointer max-w-[160px] truncate"
+                                disabled={isAnalyzing}
+                                title={`Запустить глубокий анализ ветки ${currentBranch}`}
+                                className="flex items-center space-x-1.5 px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-medium transition disabled:opacity-50 shrink-0"
                               >
-                                {availableBranches.map(b => (
-                                  <option key={b} value={b}>
-                                    {b}
-                                  </option>
-                                ))}
-                              </select>
+                                {isAnalyzing && isSelected ? (
+                                  <RefreshCw size={11} className="animate-spin" />
+                                ) : (
+                                  <Play size={11} fill="currentColor" />
+                                )}
+                                <span>Анализировать</span>
+                              </button>
                             </div>
-
-                            <button
-                              onClick={e => {
-                                e.stopPropagation();
-                                setCurrentRepo(repo);
-                                setSelectedBranch(currentBranch);
-                                onRunAnalysis(repo, currentBranch);
-                              }}
-                              disabled={isAnalyzing}
-                              title={`Запустить глубокий анализ ветки ${currentBranch}`}
-                              className="flex items-center space-x-1.5 px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-medium transition disabled:opacity-50 shrink-0 shadow-sm"
-                            >
-                              {isAnalyzing && isSelected ? (
-                                <RefreshCw size={12} className="animate-spin" />
-                              ) : (
-                                <Play size={12} fill="currentColor" />
-                              )}
-                              <span>Анализировать</span>
-                            </button>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            );
-          })
-        ) : (
-          <div className="text-center text-gray-500 text-xs py-8">
-            Репозитории не найдены. Проверьте строку поиска или подключение к Bitbucket Server.
-          </div>
-        )}
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })
+          ) : (
+            <div className="text-center text-slate-500 text-xs py-8 font-mono">
+              Репозитории не найдены. Проверьте строку поиска или подключение к Bitbucket Server.
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
 };
+

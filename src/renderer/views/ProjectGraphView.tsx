@@ -826,16 +826,16 @@ export const ProjectGraphView: React.FC<ProjectGraphViewProps> = ({ onAnalyzeRep
   };
 
   return (
-    <div className="flex h-full w-full overflow-hidden bg-[#0B0F19] relative">
+    <div className="flex h-full w-full overflow-hidden bg-[#090A0F] relative text-[#F1F5F9] select-none">
       <div className="flex-1 flex flex-col h-full overflow-hidden relative">
         {/* Navigation Bar for 4 Representations */}
-        <div className="p-4 border-b border-gray-800 bg-gray-950/90 backdrop-blur-md flex flex-wrap items-center justify-between gap-3 z-10">
+        <div className="p-3 border-b border-[#1E2330] bg-[#111318] flex flex-wrap items-center justify-between gap-2.5 z-10">
           {/* Mode Switcher Buttons */}
-          <div className="flex items-center space-x-1.5 bg-gray-900/90 p-1 rounded-xl border border-gray-800 text-xs">
+          <div className="flex items-center space-x-1 bg-[#161922] p-0.5 rounded border border-[#1E2330] text-xs">
             <button
               onClick={() => setMode('global')}
-              className={`px-3 py-1.5 rounded-lg font-medium transition flex items-center space-x-1.5 ${
-                mode === 'global' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-400 hover:text-gray-200'
+              className={`px-3 py-1 rounded text-xs font-medium transition flex items-center space-x-1.5 ${
+                mode === 'global' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               <Network size={13} />
@@ -844,8 +844,8 @@ export const ProjectGraphView: React.FC<ProjectGraphViewProps> = ({ onAnalyzeRep
 
             <button
               onClick={() => setMode('project')}
-              className={`px-3 py-1.5 rounded-lg font-medium transition flex items-center space-x-1.5 ${
-                mode === 'project' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-400 hover:text-gray-200'
+              className={`px-3 py-1 rounded text-xs font-medium transition flex items-center space-x-1.5 ${
+                mode === 'project' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               <FolderKanban size={13} />
@@ -854,18 +854,18 @@ export const ProjectGraphView: React.FC<ProjectGraphViewProps> = ({ onAnalyzeRep
 
             <button
               onClick={() => setMode('repo')}
-              className={`px-3 py-1.5 rounded-lg font-medium transition flex items-center space-x-1.5 ${
-                mode === 'repo' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-400 hover:text-gray-200'
+              className={`px-3 py-1 rounded text-xs font-medium transition flex items-center space-x-1.5 ${
+                mode === 'repo' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               <FolderGit2 size={13} />
-              <span>3. Репозиторий &rarr; Подпроекты / Ветки</span>
+              <span>3. Репозиторий &rarr; Ветки</span>
             </button>
 
             <button
               onClick={() => setMode('branch_commits')}
-              className={`px-3 py-1.5 rounded-lg font-medium transition flex items-center space-x-1.5 ${
-                mode === 'branch_commits' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-400 hover:text-gray-200'
+              className={`px-3 py-1 rounded text-xs font-medium transition flex items-center space-x-1.5 ${
+                mode === 'branch_commits' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               <GitCommit size={13} />
@@ -886,7 +886,7 @@ export const ProjectGraphView: React.FC<ProjectGraphViewProps> = ({ onAnalyzeRep
                       setSelectedRepoSlug(proj.children[0].details?.repoSlug || proj.children[0].name);
                     }
                   }}
-                  className="bg-gray-900 border border-gray-700 rounded-lg px-2.5 py-1 text-xs text-gray-200 focus:outline-none font-mono"
+                  className="bg-[#0D0E14] border border-[#1E2330] rounded px-2.5 py-1 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-mono"
                 >
                   {projectsList.map(p => (
                     <option key={p.id} value={p.details?.projectKey || p.name}>
@@ -895,7 +895,7 @@ export const ProjectGraphView: React.FC<ProjectGraphViewProps> = ({ onAnalyzeRep
                   ))}
                 </select>
 
-                <label className="flex items-center space-x-1.5 text-gray-300 text-[11px] cursor-pointer bg-gray-900 px-2.5 py-1 rounded-lg border border-gray-800">
+                <label className="flex items-center space-x-1.5 text-slate-300 text-[11px] cursor-pointer bg-[#161922] px-2.5 py-1 rounded border border-[#1E2330]">
                   <input
                     type="checkbox"
                     checked={includeBranchesInProjectMode}
@@ -922,7 +922,7 @@ export const ProjectGraphView: React.FC<ProjectGraphViewProps> = ({ onAnalyzeRep
                       }
                     }
                   }}
-                  className="bg-gray-900 border border-gray-700 rounded-lg px-2 py-1 text-xs text-gray-200 font-mono"
+                  className="bg-[#0D0E14] border border-[#1E2330] rounded px-2 py-1 text-xs text-slate-200 font-mono focus:border-blue-500"
                 >
                   {projectsList.map(p => (
                     <option key={p.id} value={p.details?.projectKey || p.name}>
@@ -940,7 +940,7 @@ export const ProjectGraphView: React.FC<ProjectGraphViewProps> = ({ onAnalyzeRep
                       setSelectedBranchName(repo.children[0].name);
                     }
                   }}
-                  className="bg-gray-900 border border-gray-700 rounded-lg px-2 py-1 text-xs text-gray-200 font-mono"
+                  className="bg-[#0D0E14] border border-[#1E2330] rounded px-2 py-1 text-xs text-slate-200 font-mono focus:border-blue-500"
                 >
                   {reposList.map(r => (
                     <option key={r.id} value={r.details?.repoSlug || r.name}>
@@ -950,22 +950,22 @@ export const ProjectGraphView: React.FC<ProjectGraphViewProps> = ({ onAnalyzeRep
                 </select>
 
                 {currentRepoNode?.details?.repoType === 'monorepo' && (
-                  <div className="flex items-center bg-gray-900 rounded-lg p-0.5 border border-gray-800 text-[11px]">
+                  <div className="flex items-center bg-[#161922] rounded p-0.5 border border-[#1E2330] text-[11px] font-mono">
                     <button
                       onClick={() => setRepoFilter('all')}
-                      className={`px-2 py-0.5 rounded ${repoFilter === 'all' ? 'bg-purple-600 text-white' : 'text-gray-400'}`}
+                      className={`px-2 py-0.5 rounded ${repoFilter === 'all' ? 'bg-blue-600 text-white' : 'text-slate-400'}`}
                     >
                       Все
                     </button>
                     <button
                       onClick={() => setRepoFilter('subprojects')}
-                      className={`px-2 py-0.5 rounded ${repoFilter === 'subprojects' ? 'bg-purple-600 text-white' : 'text-gray-400'}`}
+                      className={`px-2 py-0.5 rounded ${repoFilter === 'subprojects' ? 'bg-blue-600 text-white' : 'text-slate-400'}`}
                     >
                       Подпроекты
                     </button>
                     <button
                       onClick={() => setRepoFilter('branches')}
-                      className={`px-2 py-0.5 rounded ${repoFilter === 'branches' ? 'bg-purple-600 text-white' : 'text-gray-400'}`}
+                      className={`px-2 py-0.5 rounded ${repoFilter === 'branches' ? 'bg-blue-600 text-white' : 'text-slate-400'}`}
                     >
                       Ветки
                     </button>
@@ -989,7 +989,7 @@ export const ProjectGraphView: React.FC<ProjectGraphViewProps> = ({ onAnalyzeRep
                       }
                     }
                   }}
-                  className="bg-gray-900 border border-gray-700 rounded-lg px-2 py-1 text-xs text-gray-200 font-mono"
+                  className="bg-[#0D0E14] border border-[#1E2330] rounded px-2 py-1 text-xs text-slate-200 font-mono focus:border-blue-500"
                 >
                   {projectsList.map(p => (
                     <option key={p.id} value={p.details?.projectKey || p.name}>
@@ -1007,7 +1007,7 @@ export const ProjectGraphView: React.FC<ProjectGraphViewProps> = ({ onAnalyzeRep
                       setSelectedBranchName(repo.children[0].name);
                     }
                   }}
-                  className="bg-gray-900 border border-gray-700 rounded-lg px-2 py-1 text-xs text-gray-200 font-mono"
+                  className="bg-[#0D0E14] border border-[#1E2330] rounded px-2 py-1 text-xs text-slate-200 font-mono focus:border-blue-500"
                 >
                   {reposList.map(r => (
                     <option key={r.id} value={r.details?.repoSlug || r.name}>
@@ -1019,7 +1019,7 @@ export const ProjectGraphView: React.FC<ProjectGraphViewProps> = ({ onAnalyzeRep
                 <select
                   value={selectedBranchName}
                   onChange={e => setSelectedBranchName(e.target.value)}
-                  className="bg-gray-900 border border-gray-700 rounded-lg px-2 py-1 text-xs text-gray-200 font-mono"
+                  className="bg-[#0D0E14] border border-[#1E2330] rounded px-2 py-1 text-xs text-slate-200 font-mono focus:border-blue-500"
                 >
                   {branchesList.map(b => (
                     <option key={b.id} value={b.name}>
@@ -1032,24 +1032,24 @@ export const ProjectGraphView: React.FC<ProjectGraphViewProps> = ({ onAnalyzeRep
           </div>
 
           {/* Action buttons */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1.5">
             <button
               onClick={() => handleZoom(1.3)}
-              className="p-2 bg-gray-900 hover:bg-gray-800 text-gray-300 border border-gray-800 rounded-lg transition"
+              className="p-1.5 bg-[#161922] hover:bg-[#1E222D] text-slate-300 border border-[#1E2330] rounded transition"
               title="Увеличить масштаб"
             >
               <ZoomIn size={13} />
             </button>
             <button
               onClick={() => handleZoom(0.7)}
-              className="p-2 bg-gray-900 hover:bg-gray-800 text-gray-300 border border-gray-800 rounded-lg transition"
+              className="p-1.5 bg-[#161922] hover:bg-[#1E222D] text-slate-300 border border-[#1E2330] rounded transition"
               title="Уменьшить масштаб"
             >
               <ZoomOut size={13} />
             </button>
             <button
               onClick={handleResetZoom}
-              className="p-2 bg-gray-900 hover:bg-gray-800 text-gray-300 border border-gray-800 rounded-lg transition"
+              className="p-1.5 bg-[#161922] hover:bg-[#1E222D] text-slate-300 border border-[#1E2330] rounded transition"
               title="Сбросить масштаб"
             >
               <Maximize2 size={13} />
@@ -1057,7 +1057,7 @@ export const ProjectGraphView: React.FC<ProjectGraphViewProps> = ({ onAnalyzeRep
             <button
               onClick={loadGraphData}
               disabled={loading}
-              className="flex items-center space-x-1.5 px-3 py-1.5 bg-gray-900 hover:bg-gray-800 border border-gray-800 text-gray-300 rounded-lg text-xs transition"
+              className="flex items-center space-x-1.5 px-2.5 py-1 bg-[#161922] hover:bg-[#1E222D] border border-[#1E2330] text-slate-300 rounded text-xs transition font-mono"
             >
               <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
               <span>Обновить</span>
@@ -1066,45 +1066,45 @@ export const ProjectGraphView: React.FC<ProjectGraphViewProps> = ({ onAnalyzeRep
         </div>
 
         {/* Legend */}
-        <div className="absolute bottom-4 left-4 z-10 glass-panel p-3 rounded-xl border border-gray-800/90 text-[11px] space-y-1.5 shadow-xl max-w-xs select-none">
-          <div className="font-semibold text-gray-200 flex items-center space-x-1.5">
-            <Sparkles size={13} className="text-emerald-400" />
+        <div className="absolute bottom-4 left-4 z-10 bg-[#111318] p-3 rounded border border-[#1E2330] text-[11px] space-y-1.5 shadow-xl max-w-xs select-none">
+          <div className="font-semibold text-slate-200 flex items-center space-x-1.5">
+            <Sparkles size={13} className="text-blue-400" />
             <span>Категории и типы узлов:</span>
           </div>
-          <div className="grid grid-cols-2 gap-1.5 pt-0.5 text-[10px] text-gray-300">
+          <div className="grid grid-cols-2 gap-1.5 pt-0.5 text-[10px] text-slate-300 font-mono">
             <span className="flex items-center space-x-1">
-              <span className="w-2.5 h-2.5 rounded-full bg-purple-500 inline-block" />
+              <span className="w-2 h-2 rounded-full bg-purple-500 inline-block" />
               <span>Монорепозиторий</span>
             </span>
             <span className="flex items-center space-x-1">
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+              <span className="w-2 h-2 rounded-full bg-amber-500 inline-block" />
               <span>Версия / Копия</span>
             </span>
             <span className="flex items-center space-x-1">
-              <span className="w-2.5 h-2.5 rounded-full bg-cyan-500 inline-block" />
+              <span className="w-2 h-2 rounded-full bg-cyan-500 inline-block" />
               <span>Подпроект</span>
             </span>
             <span className="flex items-center space-x-1">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+              <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
               <span>Локальный репо</span>
             </span>
           </div>
-          <div className="flex items-center space-x-2 pt-1 border-t border-gray-800/60">
-            <span className="text-[10px] text-emerald-400 font-semibold">Свежие</span>
-            <div className="h-1.5 flex-1 rounded-full bg-gradient-to-r from-emerald-500 via-amber-400 to-rose-500 border border-gray-700/60" />
-            <span className="text-[10px] text-rose-400 font-semibold">Ранние</span>
+          <div className="flex items-center space-x-2 pt-1 border-t border-[#1E2330]">
+            <span className="text-[10px] text-emerald-400 font-mono">Свежие</span>
+            <div className="h-1 flex-1 rounded bg-gradient-to-r from-emerald-500 via-amber-400 to-rose-500 border border-[#1E2330]" />
+            <span className="text-[10px] text-rose-400 font-mono">Ранние</span>
           </div>
-          <div className="text-[10px] text-gray-400 pt-0.5">
-            Подсказка: Двойной клик по ноде раскрывает её детали на следующем представлении.
+          <div className="text-[10px] text-slate-500 pt-0.5">
+            Двойной клик по узлу раскрывает детали на следующем уровне.
           </div>
         </div>
 
         {/* SVG Canvas */}
-        <div className="flex-1 w-full h-full relative cursor-grab active:cursor-grabbing">
+        <div className="flex-1 w-full h-full relative cursor-grab active:cursor-grabbing bg-[#090A0F]">
           {loading ? (
-            <div className="absolute inset-0 flex flex-col items-center justify-center space-y-3 bg-[#0B0F19]/80 z-20">
-              <RefreshCw size={28} className="animate-spin text-blue-400" />
-              <span className="text-xs text-gray-300 font-medium">Построение D3-графа структуры...</span>
+            <div className="absolute inset-0 flex flex-col items-center justify-center space-y-3 bg-[#090A0F]/90 z-20">
+              <RefreshCw size={24} className="animate-spin text-blue-400" />
+              <span className="text-xs text-slate-300 font-mono">Построение графа структуры...</span>
             </div>
           ) : (
             <svg ref={svgRef} className="w-full h-full block" />
@@ -1114,40 +1114,40 @@ export const ProjectGraphView: React.FC<ProjectGraphViewProps> = ({ onAnalyzeRep
 
       {/* Details Side Drawer */}
       {selectedNode && (
-        <div className="w-80 border-l border-gray-800 bg-gray-950/90 p-5 flex flex-col justify-between overflow-y-auto z-20 glass-panel">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between border-b border-gray-800 pb-3">
+        <div className="w-80 border-l border-[#1E2330] bg-[#111318] p-4 flex flex-col justify-between overflow-y-auto z-20">
+          <div className="space-y-3.5">
+            <div className="flex items-center justify-between border-b border-[#1E2330] pb-2.5">
               <div className="flex items-center space-x-2">
-                {selectedNode.level === 0 && <Network size={16} className="text-blue-400" />}
-                {selectedNode.level === 1 && <FolderKanban size={16} className="text-purple-400" />}
-                {selectedNode.level === 2 && selectedNode.details?.repoType === 'monorepo' && <Boxes size={16} className="text-purple-400" />}
-                {selectedNode.level === 2 && selectedNode.details?.repoType === 'copy_version' && <Dna size={16} className="text-amber-400" />}
-                {selectedNode.level === 2 && selectedNode.details?.isLocal && <Laptop size={16} className="text-emerald-400" />}
-                {selectedNode.level === 2 && !selectedNode.details?.repoType && <FolderGit2 size={16} className="text-emerald-400" />}
-                {selectedNode.type === 'subproject' && <Layers size={16} className="text-cyan-400" />}
-                {selectedNode.type === 'branch' && <GitBranch size={16} className="text-amber-400" />}
-                {selectedNode.type === 'commit' && <GitCommit size={16} className="text-rose-400" />}
-                <span className="text-xs font-bold text-gray-200 uppercase tracking-wide">
-                  {selectedNode.type === 'subproject' ? 'ПОДПРОЕКТ' : `${selectedNode.type} (Уровень ${selectedNode.level})`}
+                {selectedNode.level === 0 && <Network size={15} className="text-blue-400" />}
+                {selectedNode.level === 1 && <FolderKanban size={15} className="text-purple-400" />}
+                {selectedNode.level === 2 && selectedNode.details?.repoType === 'monorepo' && <Boxes size={15} className="text-purple-400" />}
+                {selectedNode.level === 2 && selectedNode.details?.repoType === 'copy_version' && <Dna size={15} className="text-amber-400" />}
+                {selectedNode.level === 2 && selectedNode.details?.isLocal && <Laptop size={15} className="text-emerald-400" />}
+                {selectedNode.level === 2 && !selectedNode.details?.repoType && <FolderGit2 size={15} className="text-emerald-400" />}
+                {selectedNode.type === 'subproject' && <Layers size={15} className="text-cyan-400" />}
+                {selectedNode.type === 'branch' && <GitBranch size={15} className="text-amber-400" />}
+                {selectedNode.type === 'commit' && <GitCommit size={15} className="text-rose-400" />}
+                <span className="text-xs font-semibold text-slate-200 uppercase tracking-wide font-mono">
+                  {selectedNode.type === 'subproject' ? 'ПОДПРОЕКТ' : `${selectedNode.type} (L${selectedNode.level})`}
                 </span>
               </div>
               <button
                 onClick={() => setSelectedNode(null)}
-                className="text-gray-500 hover:text-gray-300 text-xs px-2 py-1"
+                className="text-slate-500 hover:text-slate-300 text-xs p-1"
               >
                 ✕
               </button>
             </div>
 
             <div>
-              <div className="text-[11px] text-gray-500">Название / Идентификатор</div>
-              <h3 className="text-sm font-semibold text-gray-100 break-words font-mono mt-0.5">
+              <div className="text-[10px] text-slate-500 font-mono uppercase">Идентификатор</div>
+              <h3 className="text-sm font-semibold text-slate-100 break-words font-mono mt-0.5">
                 {selectedNode.name}
               </h3>
             </div>
 
             {/* Badges */}
-            <div className="flex flex-wrap items-center gap-1.5">
+            <div className="flex flex-wrap items-center gap-1">
               {selectedNode.details?.repoType === 'monorepo' && (
                 <span className="inline-flex items-center space-x-1 text-[10px] font-mono px-2 py-0.5 rounded bg-purple-950/80 text-purple-300 border border-purple-700/60 font-semibold">
                   <Boxes size={11} />
@@ -1178,45 +1178,45 @@ export const ProjectGraphView: React.FC<ProjectGraphViewProps> = ({ onAnalyzeRep
             </div>
 
             <div className="space-y-2 text-xs">
-              <div className="glass-panel p-3 rounded-lg space-y-1">
-                <span className="text-gray-500 text-[11px] flex items-center space-x-1">
-                  <Calendar size={12} className="text-blue-400" />
-                  <span>Дата последнего обновления:</span>
+              <div className="bg-[#161922] border border-[#1E2330] p-2.5 rounded space-y-1">
+                <span className="text-slate-500 text-[10px] flex items-center space-x-1 font-mono">
+                  <Calendar size={11} className="text-blue-400" />
+                  <span>Последнее обновление:</span>
                 </span>
-                <div className="font-mono text-gray-200 font-semibold">{selectedNode.updatedAt}</div>
+                <div className="font-mono text-slate-200 font-semibold">{selectedNode.updatedAt}</div>
               </div>
 
               {selectedNode.details?.description && (
-                <div className="glass-panel p-2.5 rounded-lg space-y-0.5">
-                  <span className="text-gray-500 text-[10px]">Описание</span>
-                  <div className="text-gray-300 text-[11px]">{selectedNode.details.description}</div>
+                <div className="bg-[#161922] border border-[#1E2330] p-2.5 rounded space-y-0.5">
+                  <span className="text-slate-500 text-[10px] font-mono">Описание</span>
+                  <div className="text-slate-300 text-[11px]">{selectedNode.details.description}</div>
                 </div>
               )}
 
               {selectedNode.details?.similarityWith && (
-                <div className="glass-panel p-2.5 rounded-lg space-y-1 bg-amber-950/20 border border-amber-800/40">
-                  <span className="text-amber-400 text-[10px] font-semibold flex items-center space-x-1">
+                <div className="bg-[#161922] p-2.5 rounded space-y-1 border border-amber-800/40">
+                  <span className="text-amber-400 text-[10px] font-semibold flex items-center space-x-1 font-mono">
                     <Dna size={11} />
                     <span>Сходство с базовой версией:</span>
                   </span>
-                  <div className="text-gray-200 font-mono text-[11px]">
+                  <div className="text-slate-200 font-mono text-[11px]">
                     {selectedNode.details.similarityWith.repoName} ({selectedNode.details.similarityWith.score}%)
                   </div>
-                  <div className="text-gray-400 text-[10px]">
+                  <div className="text-slate-400 text-[10px]">
                     {selectedNode.details.similarityWith.stage}
                   </div>
                 </div>
               )}
 
               {selectedNode.details?.subprojects && selectedNode.details.subprojects.length > 0 && (
-                <div className="glass-panel p-2.5 rounded-lg space-y-1 bg-purple-950/20 border border-purple-800/40">
-                  <span className="text-purple-300 text-[10px] font-semibold flex items-center space-x-1">
+                <div className="bg-[#161922] p-2.5 rounded space-y-1 border border-purple-800/40">
+                  <span className="text-purple-300 text-[10px] font-semibold flex items-center space-x-1 font-mono">
                     <Boxes size={11} />
                     <span>Подпроекты ({selectedNode.details.subprojects.length}):</span>
                   </span>
                   <div className="space-y-1 max-h-32 overflow-y-auto pt-1">
                     {selectedNode.details.subprojects.map((sub, idx) => (
-                      <div key={idx} className="text-[11px] font-mono text-gray-300 bg-gray-900/60 px-2 py-0.5 rounded border border-gray-800">
+                      <div key={idx} className="text-[11px] font-mono text-slate-300 bg-[#0D0E14] px-2 py-0.5 rounded border border-[#1E2330]">
                         📦 {sub}
                       </div>
                     ))}
@@ -1225,42 +1225,42 @@ export const ProjectGraphView: React.FC<ProjectGraphViewProps> = ({ onAnalyzeRep
               )}
 
               {selectedNode.details?.localPath && (
-                <div className="glass-panel p-2.5 rounded-lg space-y-0.5">
-                  <span className="text-gray-500 text-[10px]">Локальный путь</span>
+                <div className="bg-[#161922] border border-[#1E2330] p-2.5 rounded space-y-0.5">
+                  <span className="text-slate-500 text-[10px] font-mono">Локальный путь</span>
                   <div className="font-mono text-emerald-400 text-[11px] break-all">{selectedNode.details.localPath}</div>
                 </div>
               )}
 
               {selectedNode.details?.projectKey && (
-                <div className="glass-panel p-2.5 rounded-lg space-y-0.5">
-                  <span className="text-gray-500 text-[10px]">Ключ проекта</span>
+                <div className="bg-[#161922] border border-[#1E2330] p-2.5 rounded space-y-0.5">
+                  <span className="text-slate-500 text-[10px] font-mono">Ключ проекта</span>
                   <div className="font-mono text-blue-400 font-semibold">{selectedNode.details.projectKey}</div>
                 </div>
               )}
 
               {selectedNode.details?.repoSlug && (
-                <div className="glass-panel p-2.5 rounded-lg space-y-0.5">
-                  <span className="text-gray-500 text-[10px]">Слаг репозитория</span>
+                <div className="bg-[#161922] border border-[#1E2330] p-2.5 rounded space-y-0.5">
+                  <span className="text-slate-500 text-[10px] font-mono">Слаг репозитория</span>
                   <div className="font-mono text-emerald-400">{selectedNode.details.repoSlug}</div>
                 </div>
               )}
 
               {selectedNode.details?.branchName && (
-                <div className="glass-panel p-2.5 rounded-lg space-y-0.5">
-                  <span className="text-gray-500 text-[10px]">Ветка</span>
+                <div className="bg-[#161922] border border-[#1E2330] p-2.5 rounded space-y-0.5">
+                  <span className="text-slate-500 text-[10px] font-mono">Ветка</span>
                   <div className="font-mono text-amber-400">{selectedNode.details.branchName}</div>
                 </div>
               )}
 
               {selectedNode.details?.commitHash && (
-                <div className="glass-panel p-2.5 rounded-lg space-y-1">
-                  <span className="text-gray-500 text-[10px]">Хеш коммита</span>
+                <div className="bg-[#161922] border border-[#1E2330] p-2.5 rounded space-y-1">
+                  <span className="text-slate-500 text-[10px] font-mono">Хеш коммита</span>
                   <div className="font-mono text-rose-300 text-[11px] break-all">{selectedNode.details.commitHash}</div>
                   {selectedNode.details.author && (
-                    <div className="text-gray-400 text-[10px]">Автор: {selectedNode.details.author}</div>
+                    <div className="text-slate-400 text-[10px]">Автор: {selectedNode.details.author}</div>
                   )}
                   {selectedNode.details.message && (
-                    <div className="text-gray-300 text-[11px] pt-1 italic font-sans">
+                    <div className="text-slate-300 text-[11px] pt-1 italic font-sans">
                       «{selectedNode.details.message}»
                     </div>
                   )}
@@ -1275,9 +1275,9 @@ export const ProjectGraphView: React.FC<ProjectGraphViewProps> = ({ onAnalyzeRep
                   setSelectedProjectKey(selectedNode.details!.projectKey!);
                   setMode('project');
                 }}
-                className="w-full flex items-center justify-center space-x-1.5 py-2 bg-gray-900 hover:bg-gray-800 border border-gray-700 text-purple-300 rounded-xl text-xs font-semibold transition"
+                className="w-full flex items-center justify-center space-x-1.5 py-1.5 bg-[#161922] hover:bg-[#1E222D] border border-[#1E2330] text-purple-300 rounded text-xs font-semibold transition font-mono"
               >
-                <span>Перейти к репозиториям проекта</span>
+                <span>Репозитории проекта</span>
                 <ChevronRight size={13} />
               </button>
             )}
@@ -1289,9 +1289,9 @@ export const ProjectGraphView: React.FC<ProjectGraphViewProps> = ({ onAnalyzeRep
                   if (selectedNode.details?.projectKey) setSelectedProjectKey(selectedNode.details.projectKey);
                   setMode('repo');
                 }}
-                className="w-full flex items-center justify-center space-x-1.5 py-2 bg-gray-900 hover:bg-gray-800 border border-gray-700 text-emerald-300 rounded-xl text-xs font-semibold transition"
+                className="w-full flex items-center justify-center space-x-1.5 py-1.5 bg-[#161922] hover:bg-[#1E222D] border border-[#1E2330] text-emerald-300 rounded text-xs font-semibold transition font-mono"
               >
-                <span>Перейти к веткам и подпроектам</span>
+                <span>Ветки и подпроекты</span>
                 <ChevronRight size={13} />
               </button>
             )}
@@ -1302,9 +1302,9 @@ export const ProjectGraphView: React.FC<ProjectGraphViewProps> = ({ onAnalyzeRep
                   setSelectedBranchName(selectedNode.name);
                   setMode('branch_commits');
                 }}
-                className="w-full flex items-center justify-center space-x-1.5 py-2 bg-gray-900 hover:bg-gray-800 border border-gray-700 text-amber-300 rounded-xl text-xs font-semibold transition"
+                className="w-full flex items-center justify-center space-x-1.5 py-1.5 bg-[#161922] hover:bg-[#1E222D] border border-[#1E2330] text-amber-300 rounded text-xs font-semibold transition font-mono"
               >
-                <span>Перейти к коммитам</span>
+                <span>Коммиты ветки</span>
                 <ChevronRight size={13} />
               </button>
             )}
@@ -1328,7 +1328,7 @@ export const ProjectGraphView: React.FC<ProjectGraphViewProps> = ({ onAnalyzeRep
                 };
                 onAnalyzeRepo(targetRepo, selectedNode.details?.branchName || 'main');
               }}
-              className="mt-4 w-full flex items-center justify-center space-x-1.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold transition shadow-lg shadow-blue-600/20"
+              className="mt-3 w-full flex items-center justify-center space-x-1.5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-semibold transition shadow"
             >
               <Play size={13} fill="currentColor" />
               <span>Анализировать репозиторий</span>

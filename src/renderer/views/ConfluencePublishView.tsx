@@ -110,156 +110,166 @@ ${analysis.recommendations.map(r => `<li><strong>[${r.severity.toUpperCase()}] $
   };
 
   return (
-    <div className="p-8 max-w-4xl mx-auto space-y-6 overflow-y-auto h-full">
-      <div>
-        <h2 className="text-xl font-bold text-gray-100 flex items-center space-x-2">
-          <Share2 className="text-purple-400" size={22} />
-          <span>Публикация отчета в Confluence Server</span>
-        </h2>
-        <p className="text-xs text-gray-400 mt-1">
-          Экспорт сформированной документации, диаграмм связей, OpenAPI спецификаций и рекомендаций в корпоративную базу знаний.
-        </p>
+    <div className="h-full flex flex-col overflow-hidden bg-[#090A0F] text-[#F1F5F9] select-none">
+      {/* Header */}
+      <div className="p-4 border-b border-[#1E2330] bg-[#111318] flex items-center justify-between shrink-0">
+        <div className="flex items-center space-x-3">
+          <div className="p-2 rounded bg-[#161922] border border-[#1E2330] text-blue-400">
+            <Share2 size={18} />
+          </div>
+          <div>
+            <h2 className="text-sm font-semibold text-slate-100 flex items-center space-x-2">
+              <span>Экспорт и Публикация отчетов в Confluence Server</span>
+            </h2>
+            <p className="text-xs text-slate-400">
+              Экспорт документации, диаграмм связей, OpenAPI спецификаций и рекомендаций в корпоративную базу знаний
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div className="glass-panel p-6 rounded-xl space-y-5">
-        {/* Space Selection Mode */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <label className="text-xs font-semibold text-gray-300">Целевое пространство Confluence (Space)</label>
-            <div className="flex items-center space-x-3 text-xs">
-              <button
-                type="button"
-                onClick={() => setUseCustomKey(!useCustomKey)}
-                className="text-purple-400 hover:text-purple-300 flex items-center space-x-1 transition"
-              >
-                {useCustomKey ? <ListFilter size={13} /> : <Edit3 size={13} />}
-                <span>{useCustomKey ? 'Выбрать из списка' : 'Ввести ключ пространства вручную'}</span>
-              </button>
-              <button
-                type="button"
-                onClick={loadLiveSpaces}
-                disabled={loadingSpaces}
-                className="text-gray-400 hover:text-gray-200 flex items-center space-x-1 transition"
-              >
-                <RefreshCw size={12} className={loadingSpaces ? 'animate-spin' : ''} />
-                <span>Обновить</span>
-              </button>
-            </div>
-          </div>
-
-          {useCustomKey ? (
-            <div>
-              <input
-                type="text"
-                value={customSpaceKey}
-                onChange={e => setCustomSpaceKey(e.target.value)}
-                placeholder="Введите точный ключ пространства (например: ARCH, TEAM, DOCS, DEV)..."
-                className="w-full bg-gray-900 border border-purple-500/80 rounded-lg px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-purple-400 font-mono uppercase"
-              />
-              <p className="text-[11px] text-gray-400 mt-1">
-                Ключ пространства из URL Confluence (например: <code>https://confluence.corp.local/display/<b>MYSPACE</b></code>).
-              </p>
-            </div>
-          ) : (
-            <div>
-              {spaces.length > 0 ? (
-                <select
-                  value={selectedSpace}
-                  onChange={e => setSelectedSpace(e.target.value)}
-                  className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-purple-500 font-mono"
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto p-5">
+        <div className="max-w-4xl bg-[#161922] border border-[#1E2330] rounded p-5 space-y-4">
+          {/* Space Selection Mode */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-medium text-slate-300">Целевое пространство Confluence (Space)</label>
+              <div className="flex items-center space-x-3 text-xs">
+                <button
+                  type="button"
+                  onClick={() => setUseCustomKey(!useCustomKey)}
+                  className="text-blue-400 hover:text-blue-300 flex items-center space-x-1 transition font-mono text-[11px]"
                 >
-                  {spaces.map(s => (
-                    <option key={s.key} value={s.key}>
-                      {s.name}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <div className="p-3 bg-gray-900 border border-gray-800 rounded-lg text-xs text-gray-300 flex items-center justify-between">
-                  <span>Список пространств загружается или пуст.</span>
-                  <button
-                    onClick={() => setUseCustomKey(true)}
-                    className="text-purple-400 hover:underline font-semibold"
-                  >
-                    Ввести ключ вручную &rarr;
-                  </button>
-                </div>
-              )}
+                  {useCustomKey ? <ListFilter size={13} /> : <Edit3 size={13} />}
+                  <span>{useCustomKey ? 'Выбрать из списка' : 'Ввести ключ пространства вручную'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={loadLiveSpaces}
+                  disabled={loadingSpaces}
+                  className="text-slate-400 hover:text-slate-200 flex items-center space-x-1 transition text-[11px]"
+                >
+                  <RefreshCw size={12} className={loadingSpaces ? 'animate-spin' : ''} />
+                  <span>Обновить</span>
+                </button>
+              </div>
             </div>
-          )}
-        </div>
 
-        <div>
-          <label className="block text-xs font-semibold text-gray-300 mb-1">Заголовок страницы</label>
-          <input
-            type="text"
-            value={pageTitle}
-            onChange={e => setPageTitle(e.target.value)}
-            className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-purple-500 font-mono"
-          />
-        </div>
-
-        {/* Included Sections */}
-        <div className="space-y-2 pt-2 border-t border-gray-800">
-          <label className="block text-xs font-semibold text-gray-300">Включаемые разделы документации</label>
-          <div className="grid grid-cols-2 gap-2 text-xs text-gray-300">
-            <label className="flex items-center space-x-2 cursor-pointer">
-              <input type="checkbox" checked={includeOverview} onChange={e => setIncludeOverview(e.target.checked)} className="rounded" />
-              <span>Общие метрики репозитория и ветка</span>
-            </label>
-            <label className="flex items-center space-x-2 cursor-pointer">
-              <input type="checkbox" checked={includeStack} onChange={e => setIncludeStack(e.target.checked)} className="rounded" />
-              <span>Технологический стек и фреймворки</span>
-            </label>
-            <label className="flex items-center space-x-2 cursor-pointer">
-              <input type="checkbox" checked={includeApi} onChange={e => setIncludeApi(e.target.checked)} className="rounded" />
-              <span>Таблица API эндпоинтов и маршрутов</span>
-            </label>
-            <label className="flex items-center space-x-2 cursor-pointer">
-              <input type="checkbox" checked={includeSequence} onChange={e => setIncludeSequence(e.target.checked)} className="rounded" />
-              <span>Sequence-диаграммы (Call Graph)</span>
-            </label>
-            <label className="flex items-center space-x-2 cursor-pointer">
-              <input type="checkbox" checked={includeErd} onChange={e => setIncludeErd(e.target.checked)} className="rounded" />
-              <span>ER-диаграмма PostgreSQL (DDL)</span>
-            </label>
-            <label className="flex items-center space-x-2 cursor-pointer">
-              <input type="checkbox" checked={includeRecs} onChange={e => setIncludeRecs(e.target.checked)} className="rounded" />
-              <span>Архитектурные рекомендации & ИБ аудит</span>
-            </label>
-          </div>
-        </div>
-
-        {/* Publish Action */}
-        <div className="pt-4 flex items-center justify-between">
-          <div>
-            {publishResult && (
-              <div className={`flex items-center space-x-2 text-xs ${publishResult.success ? 'text-emerald-400' : 'text-red-400'}`}>
-                {publishResult.success ? <CheckCircle2 size={15} /> : <AlertCircle size={15} />}
-                <span>{publishResult.message}</span>
-                {publishResult.pageUrl && (
-                  <a
-                    href={publishResult.pageUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="underline flex items-center space-x-1 text-blue-400 ml-2"
+            {useCustomKey ? (
+              <div>
+                <input
+                  type="text"
+                  value={customSpaceKey}
+                  onChange={e => setCustomSpaceKey(e.target.value)}
+                  placeholder="Введите ключ пространства (например: ARCH, TEAM, DOCS, DEV)..."
+                  className="w-full bg-[#0D0E14] border border-blue-500/80 rounded px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-400 font-mono uppercase"
+                />
+                <p className="text-[11px] text-slate-500 mt-1 font-mono">
+                  Ключ пространства из URL Confluence (например: <code>https://confluence.corp.local/display/<b>MYSPACE</b></code>).
+                </p>
+              </div>
+            ) : (
+              <div>
+                {spaces.length > 0 ? (
+                  <select
+                    value={selectedSpace}
+                    onChange={e => setSelectedSpace(e.target.value)}
+                    className="w-full bg-[#0D0E14] border border-[#1E2330] rounded px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-mono"
                   >
-                    <span>Открыть страницу</span>
-                    <ExternalLink size={11} />
-                  </a>
+                    {spaces.map(s => (
+                      <option key={s.key} value={s.key}>
+                        {s.name} ({s.key})
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <div className="p-3 bg-[#0D0E14] border border-[#1E2330] rounded text-xs text-slate-400 flex items-center justify-between">
+                    <span>Список пространств загружается или пуст.</span>
+                    <button
+                      onClick={() => setUseCustomKey(true)}
+                      className="text-blue-400 hover:underline font-medium"
+                    >
+                      Ввести ключ вручную &rarr;
+                    </button>
+                  </div>
                 )}
               </div>
             )}
           </div>
 
-          <button
-            onClick={handlePublish}
-            disabled={isPublishing || !analysis || !activeSpaceKey}
-            className="flex items-center space-x-2 px-5 py-2.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-xs font-semibold transition disabled:opacity-50 shadow-lg shadow-purple-600/20"
-          >
-            {isPublishing && <RefreshCw size={13} className="animate-spin" />}
-            <span>Опубликовать в Confluence ({activeSpaceKey || '...'})</span>
-          </button>
+          <div>
+            <label className="block text-xs font-medium text-slate-300 mb-1">Заголовок страницы</label>
+            <input
+              type="text"
+              value={pageTitle}
+              onChange={e => setPageTitle(e.target.value)}
+              className="w-full bg-[#0D0E14] border border-[#1E2330] rounded px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-mono"
+            />
+          </div>
+
+          {/* Included Sections */}
+          <div className="space-y-2 pt-2 border-t border-[#1E2330]">
+            <label className="block text-xs font-medium text-slate-300">Включаемые разделы документации</label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-slate-300">
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input type="checkbox" checked={includeOverview} onChange={e => setIncludeOverview(e.target.checked)} className="rounded bg-[#0D0E14] border-[#1E2330]" />
+                <span>Общие метрики репозитория и ветка</span>
+              </label>
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input type="checkbox" checked={includeStack} onChange={e => setIncludeStack(e.target.checked)} className="rounded bg-[#0D0E14] border-[#1E2330]" />
+                <span>Технологический стек и фреймворки</span>
+              </label>
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input type="checkbox" checked={includeApi} onChange={e => setIncludeApi(e.target.checked)} className="rounded bg-[#0D0E14] border-[#1E2330]" />
+                <span>Таблица API эндпоинтов и маршрутов</span>
+              </label>
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input type="checkbox" checked={includeSequence} onChange={e => setIncludeSequence(e.target.checked)} className="rounded bg-[#0D0E14] border-[#1E2330]" />
+                <span>Sequence-диаграммы (Call Graph)</span>
+              </label>
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input type="checkbox" checked={includeErd} onChange={e => setIncludeErd(e.target.checked)} className="rounded bg-[#0D0E14] border-[#1E2330]" />
+                <span>ER-диаграмма PostgreSQL (DDL)</span>
+              </label>
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input type="checkbox" checked={includeRecs} onChange={e => setIncludeRecs(e.target.checked)} className="rounded bg-[#0D0E14] border-[#1E2330]" />
+                <span>Архитектурные рекомендации & ИБ аудит</span>
+              </label>
+            </div>
+          </div>
+
+          {/* Publish Action */}
+          <div className="pt-3 flex items-center justify-between border-t border-[#1E2330]">
+            <div>
+              {publishResult && (
+                <div className={`flex items-center space-x-2 text-xs ${publishResult.success ? 'text-emerald-400' : 'text-rose-400'}`}>
+                  {publishResult.success ? <CheckCircle2 size={14} /> : <AlertCircle size={14} />}
+                  <span>{publishResult.message}</span>
+                  {publishResult.pageUrl && (
+                    <a
+                      href={publishResult.pageUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline flex items-center space-x-1 text-blue-400 ml-2"
+                    >
+                      <span>Открыть страницу</span>
+                      <ExternalLink size={11} />
+                    </a>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <button
+              onClick={handlePublish}
+              disabled={isPublishing || !analysis || !activeSpaceKey}
+              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-medium transition disabled:opacity-50"
+            >
+              {isPublishing && <RefreshCw size={13} className="animate-spin" />}
+              <span>Опубликовать в Confluence ({activeSpaceKey || '...'})</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
